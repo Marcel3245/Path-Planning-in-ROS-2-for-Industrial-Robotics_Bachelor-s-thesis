@@ -93,7 +93,7 @@
     <gazebo reference="world">
     </gazebo>
     <gazebo>
-      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <plugin filename="libgz_ros2_control.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <parameters>$(arg simulation_controllers)</parameters>
       </plugin>
     </gazebo>
