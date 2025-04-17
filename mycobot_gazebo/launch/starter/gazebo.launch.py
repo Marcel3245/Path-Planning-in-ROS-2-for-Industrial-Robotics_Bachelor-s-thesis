@@ -41,10 +41,9 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([os.path.join(
                 get_package_share_directory('ros_gz_sim'), 'launch'), '/gz_sim.launch.py']),
             launch_arguments=[
-                # Combine arguments into a single string
                 ('gz_args', [
-                            os.path.join(get_package_share_directory(package_name_gazebo), 'worlds', 'empty.world.sdf'), # Assuming empty.world is the correct file
-                            ' -r -v 1' # Start paused (-r), verbosity 1 (-v 1)
+                            os.path.join(get_package_share_directory(package_name_gazebo), 'worlds', 'pick_and_place_demo.world'), 
+                            ' -r -v 1'
                             ]
                 )
             ]
@@ -64,23 +63,21 @@ def generate_launch_description():
             " ",
             "visual_params:=", visual_params,
             " ",
-            "use_fake_hardware:=", "True", # Use the sim interface, not fake
-            " ",
-            "fake_sensor_commands:=", "False", # Doesn't matter if fake_hardware is false
-            " ",
-            "sim_gazebo:=", "True", # Explicitly false
-            " ",
-            "sim_ignition:=", "True"
+            "use_fake_hardware:=", "True", 
+            # " ",
+            # "fake_sensor_commands:=", "False",
+            # " ",
+            # "sim_gazebo:=", "True", 
+            # " ",
+            # "sim_ignition:=", "True"
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
-
 
     gz_spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
         output='screen',
-        arguments=['-string', robot_description,
+        arguments=['-string', robot_description_content,
                    '-x', '0.0',
                    '-y', '0.0',
                    '-z', '0.0',
