@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="storage_object">
+    <xacro:macro name="storage_model_macro"> 
+        <link name="target_storage">
+            <visual>
+                <geometry>
+                    <mesh filename="package://mycobot_description/meshes/storage/visual/storage.dae"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://mycobot_description/meshes/storage/collision/storage.stl"/>
+                </geometry>
+            </collision>
+            <inertial>
+              <mass value="10.0" />
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+            </inertial>
+        </link>
+    </xacro:macro>
+
+    <xacro:storage_model_macro />
+</robot>

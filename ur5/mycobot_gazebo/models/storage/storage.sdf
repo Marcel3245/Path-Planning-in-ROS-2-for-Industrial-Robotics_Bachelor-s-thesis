@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+    <model name="storage">
+        <link name="link">
+            <gravity>true</gravity>
+            <inertial>
+                <mass>0.7</mass> 
+                <inertia>
+                    <ixx>0.0002</ixx> 
+                    <iyy>0.0004</iyy>
+                    <izz>0.0006</izz>
+
+
+                    <!-- <ixx>0.000002285</ixx> 
+                    <iyy>0.000004530</iyy>
+                    <izz>0.000006706</izz> -->
+                </inertia>
+            </inertial>
+            <collision name="collision">
+                <geometry>
+                    <mesh><uri>collision/storage.stl</uri></mesh>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <mesh><uri>visual/storage.dae</uri></mesh>
+                </geometry>
+            </visual>
+        </link>
+    </model>
+</sdf>

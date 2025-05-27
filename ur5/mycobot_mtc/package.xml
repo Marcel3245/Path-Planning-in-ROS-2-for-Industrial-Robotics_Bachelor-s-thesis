@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mycobot_mtc</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="pan.balwanek.89@gmail.com">marcel3245</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>moveit_task_constructor_core</depend>
+  <depend>rclcpp</depend>
+
+
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_ros_move_group</depend>
+  <depend>moveit_kinematics</depend>
+  <depend>moveit_planners_ompl</depend>
+  <depend>moveit_ros_visualization</depend>
+  <depend>rviz2</depend>
+  <depend>robotiq_description</depend>
+  <depend>ur_description</depend>
+  <depend>rviz_visual_tools</depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>moveit_simple_controller_manager</exec_depend>
+  <exec_depend>moveit_configs_utils</exec_depend>
+  <exec_depend>pilz_industrial_motion_planner</exec_depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

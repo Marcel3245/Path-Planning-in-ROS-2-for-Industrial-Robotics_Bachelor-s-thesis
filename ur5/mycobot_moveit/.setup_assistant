@@ -1,0 +1,7 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: mycobot_description
+    relative_path: urdf/ur5_robotiq85_gripper.urdf.xacro
+  SRDF:
+    package: mycobot_moveit
+    relative_path: srdf/ur_gripper.srdf.srdf
