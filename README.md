@@ -113,7 +113,8 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
 
     # Clone the project code into the src directory
     git clone https://github.com/Marcel3245/Path-Planning-in-ROS-2-for-Industrial-Robotics_Bachelor-s-thesis.git .
-
+    cd plugins/ && git clone https://github.com/moveit/moveit_task_constructor.git 
+    
     # Install the dependencies
     cd ~/ros2_ws/
     rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
