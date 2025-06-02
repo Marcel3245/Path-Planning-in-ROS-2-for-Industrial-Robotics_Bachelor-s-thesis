@@ -2,7 +2,6 @@
 # Bachelor's thesis: Path Planning in ROS 2 for Industrial Robotics
 
 An integrated ROS 2 system for automated, collision-free path planning for a Universal Robot 5 (UR5). Utilizes MoveIt for motion planning, Gazebo for simulation, and RViz for visualization. Incorporates OpenCV for basic object detection to dynamically update the planning scene from camera input, enabling more responsive path planning. Trajectories are validated in Gazebo to ensure safety and correctness, aiming to automate path generation and reduce manual programming in industrial robotics.
-
 ## Environment Setup: Installing WSL2 and Ubuntu 24.04
 
 This project is built using the ROS 2 software framework, which requires a Linux environment to run. For users on Windows, the recommended and most straightforward approach is to install and use Windows Subsystem for Linux 2 (WSL2) with a compatible Ubuntu distribution. 
@@ -25,7 +24,8 @@ Here's how to set up your environment:
     For detailed instructions on installing Ubuntu 24.04 on WSL2, you can refer to the official Ubuntu documentation:
     [https://documentation.ubuntu.com/wsl/stable/howto/install-ubuntu-wsl2/]. 
 
-After completing these steps, you will have a working Ubuntu 24.04 environment running within WSL2, ready for the next steps of setting up ROS 2 and the project dependencies.## Installation: ROS 2 Jazzy and Gazebo Harmonic
+After completing these steps, you will have a working Ubuntu 24.04 environment running within WSL2, ready for the next steps of setting up ROS 2 and the project dependencies.
+## Installation: ROS 2 Jazzy and Gazebo Harmonic
 
 This project utilizes the ROS 2 Jazzy distribution and the Gazebo Harmonic simulator. Follow the steps below to install them on your Ubuntu 24.04 environment within WSL2.
 
@@ -50,7 +50,23 @@ This project utilizes the ROS 2 Jazzy distribution and the Gazebo Harmonic simul
     Refer to the official guide here:
     [https://gazebosim.org/docs/harmonic/install_ubuntu/]
 
-    Alternatively, when installing ROS 2 Jazzy, you can often install Gazebo Harmonic via the `ros-jazzy-ros-gz` package, which pulls the compatible Gazebo version from the ROS repositories.## Prepare the Workspace
+    Alternatively, when installing ROS 2 Jazzy, you can often install Gazebo Harmonic via the `ros-jazzy-ros-gz` package, which pulls the compatible Gazebo version from the ROS repositories.
+
+
+4. **Install MoveIt 2**
+
+    Ensure you have the necessary MoveIt 2 tools installed. The recommended approach is to follow the official binary installation guide: [https://moveit.ai/install-moveit2/binary/](https://moveit.ai/install-moveit2/binary/)
+
+    For a quick installation, you can use the commands below. The second command installs a wider set of tools, including common motion planners like OMPL.
+
+    ```bash
+    # Install core MoveIt 2 packages
+    sudo apt install ros-$ROS_DISTRO-moveit
+
+    # Install additional MoveIt 2 tools and planners
+    sudo apt install ros-$ROS_DISTRO-moveit*
+    ```
+## Prepare the Workspace
 
 To set up and prepare the ROS 2 workspace for this project, follow these steps:
 
@@ -64,10 +80,8 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
     # Custom aliases for ROS 2 workspace
     export _colcon_cd_root=/opt/ros/jazzy/
     alias build='cd ~/ros2_ws/ && colcon build --symlink-install && source install/setup.bash'
-    alias reset_ws='unset AMENT_PREFIX_PATH && unset CMAKE_PREFIX_PATH && source /opt/ros/jazzy/setup.bash'
-    alias backup_ws='mkdir -p ~/backups && cp -r ~/ros2_ws/src ~/backups/ros2_ws_bak_$(date +%Y%m%d_%H%M%S)/ && echo "Backup made successfully in ~/backups/ros2_ws_bak_$(date +%Y%m%d_%H%M%S)/"'
-    alias reload_ws='cd ~/ros2_ws/ && rm -rf build/ install/ log/ src/ && mkdir -p src/ && latest_backup=$(ls -dt ~/backups/ros2_ws_bak_* | head -n 1) && if [ -d "$latest_backup" ]; then cp -r "$latest_backup"/* src/; echo "Reloaded latest backup from $latest_backup"; else echo "No backups found to reload."; fi'
-    alias save_ws='mkdir -p ~/backups && latest_backup=$(ls -dt ~/backups/ros2_ws_bak_* | head -n 1) && if [ -d "$latest_backup" ]; then rm -r "$latest_backup"; echo "Removed old backup: $latest_backup"; fi && cp -r ~/ros2_ws/src ~/backups/ros2_ws_bak_$(date +%Y%m%d_%H%M%S)/ && echo "Saved current workspace state to ~/backups/ros2_ws_bak_$(date +%Y%m%d_%H%M%S)/"'
+    # Useful for hard reset of src. Important: remember to build the workspace after! 
+    alias reset_ws='cd ~/ros2_ws/ && rm -r /install /build /log && unset AMENT_PREFIX_PATH && unset CMAKE_PREFIX_PATH && source /opt/ros/jazzy/setup.bash'
 
     # Source the ROS 2 setup file
     source /opt/ros/jazzy/setup.bash
@@ -100,8 +114,36 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
     # Clone the project code into the src directory
     git clone https://github.com/Marcel3245/Path-Planning-in-ROS-2-for-Industrial-Robotics_Bachelor-s-thesis.git .
 
+    # Install the dependencies
+    cd ~/ros2_ws/
+    rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
+
     # Build the workspace (using the alias defined above)
     build
     ```
 
     The `build` command will compile the packages in your `src` directory. Once it completes successfully, your workspace is set up and ready.
+
+## Run the Program
+
+    To launch the complete system, use the following ROS 2 command from your workspace root:
+
+    ```bash
+    cd ~/ros2_ws/
+    
+    ros2 launch mycobot_mtc run.launch.py
+    ```
+
+**Upon execution, three windows should open:**
+
+    1. Gazebo: The simulation environment showing the UR5 and workspace.
+    2. RViz: The 3D visualization interface for monitoring the robot and planning scene.
+    3. OpenCV Camera View: A window displaying the processed camera feed.
+
+**Within the RViz window, you will find two interactive buttons:**
+
+    1. Spawn Workpieces: Click this button to add six green workpiece objects into the designated storage area within the simulation.
+    2. Run MTC: Press this button to initiate the MoveIt Task Constructor (MTC) process. MTC will search for possible collision-free trajectories to move a workpiece.
+    
+The system is configured to find a specific number of trajectories (as defined in the code).
+If the MTC search is successful, the UR5 manipulator will automatically execute the trajectory determined to be the "cheapest" based on predefined cost metrics (also configured in the code). You can observe the robot's movement and the simulated workpiece transfer from the start to the target storage within the Gazebo simulation window, reflecting the planned real-world behavior.
