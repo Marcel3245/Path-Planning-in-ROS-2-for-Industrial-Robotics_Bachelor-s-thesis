@@ -61,10 +61,10 @@ This project utilizes the ROS 2 Jazzy distribution and the Gazebo Harmonic simul
 
     ```bash
     # Install core MoveIt 2 packages
-    sudo apt install ros-$ROS_DISTRO-moveit
+    sudo apt install ros-jazzy-moveit
 
     # Install additional MoveIt 2 tools and planners
-    sudo apt install ros-$ROS_DISTRO-moveit*
+    sudo apt install ros-jazzy-moveit*
     ```
 ## Prepare the Workspace
 
