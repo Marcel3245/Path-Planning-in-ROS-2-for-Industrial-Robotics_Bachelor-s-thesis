@@ -21,13 +21,17 @@ arm_controller:
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
-    allow_nonzero_velocity_at_trajectory_end: true
     command_interfaces:
       - position
       - velocity
     state_interfaces:
       - position
       - velocity
+    
+    open_loop_control: false
+    allow_nonzero_velocity_at_trajectory_end: true
+    allow_integration_in_goal_trajectories: true
+
 
     gains:
       shoulder_pan_joint:      { p: 100.0, i: 0.01, d: 0.1 }
@@ -45,3 +49,6 @@ gripper_action_controller:
     action_monitor_rate: 20.0
     goal_tolerance: 0.01
     max_effort: 100.0
+    allow_stalling: false
+    stall_velocity_threshold: 0.001
+    stall_timeout: 1.0

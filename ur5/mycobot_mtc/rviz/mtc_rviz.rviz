@@ -205,6 +205,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          robotiq_coupler:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
 # --- End Arm Links ---
 
 # --- Start Gripper Links ---
@@ -358,6 +363,11 @@ Visualization Manager:
             Show Trail: false
             Value: true
           wrist_3_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          robotiq_coupler:
             Alpha: 1
             Show Axes: false
             Show Trail: false

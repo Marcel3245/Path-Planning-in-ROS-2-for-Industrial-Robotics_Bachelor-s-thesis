@@ -317,8 +317,6 @@ void MTCTaskNode::run_mtc_callback(const std_msgs::msg::Bool::SharedPtr msg)
 
 std::optional<geometry_msgs::msg::Pose> MTCTaskNode::get_start_storage_pose()
 {
-    // ... (Existing TF lookup function - used for placing smaller objects,
-    //     not the main storage mesh from camera data) ...
     const std::string target_frame = "world";
     const std::string source_frame = "start_storage";
 
@@ -451,12 +449,12 @@ void MTCTaskNode::setupPlanningScene()
             RCLCPP_INFO(LOGGER, "Detected TF Yaw close to 0 or 180 degrees (%.2f rad) for smaller objects layout.", yaw);
             x_diff = {-0.0325, -0.0325, -0.0325, 0.0325, 0.0325, 0.0325};
             y_diff = {-0.06, 0, 0.06, -0.06, 0, 0.06};
-            z_offset = 0.924; // This Z offset seems related to the TF's height
+            z_offset = 0.925; // This Z offset seems related to the TF's height
         } else if (is_yaw_plus_minus_90) {
              RCLCPP_INFO(LOGGER, "Detected TF Yaw close to 90 or -90 degrees (%.2f rad) for smaller objects layout.", yaw);
              x_diff = {-0.06, 0, 0.06, -0.06, 0, 0.06};
              y_diff = {-0.0325, -0.0325, -0.0325, 0.0325, 0.0325, 0.0325};
-             z_offset = 0.924; // This Z offset seems related to the TF's height
+             z_offset = 0.925; // This Z offset seems related to the TF's height
         }
          else {
              RCLCPP_WARN(LOGGER, "Detected TF Yaw is %.2f rad, which is not close to 0, 90, 180, or -90 degrees. Cannot determine smaller object layout based on TF.", yaw);
@@ -495,7 +493,7 @@ void MTCTaskNode::setupPlanningScene()
                  object_pose.position.y = storage_pose.position.y + x_diff[i];
             }
 
-            object_pose.position.z = 0.043/2 + z_offset; // Z relative to TF Z base + cylinder half height
+            object_pose.position.z = cylinder.dimensions[0]/2 + z_offset; // Z relative to TF Z base + cylinder half height
 
             object_pose.orientation = storage_pose.orientation; // Inherit orientation from TF
 
@@ -593,7 +591,7 @@ mtc::Task MTCTaskNode::createTask()
   const auto& arm_group_name = "arm_controller";
   const auto& hand_group_name = "gripper";
   const auto& hand_frame = "ee_link";
-  const auto& eef = "gripper";
+  const auto& eef = "eef_gripper";
 
   task.setProperty("group", arm_group_name);
   task.setProperty("eef", eef);
@@ -714,6 +712,22 @@ mtc::Task MTCTaskNode::createTask()
       attach_object_stage = stage.get();
       grasp->insert(std::move(stage));
     }
+  // =========================================== LIFT OBJECT ================================================ //
+    {
+      auto stage = std::make_unique<mtc::stages::MoveRelative>("lift object", cartesian_planner);
+      stage->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+      stage->setMinMaxDistance(0.1, 0.3);
+      stage->setIKFrame(hand_frame);
+      stage->properties().set("marker_ns", "lift_object");
+
+      // Set upward direction
+      geometry_msgs::msg::Vector3Stamped vec;
+      vec.header.frame_id = "world";
+      vec.vector.z = 1.0;
+      stage->setDirection(vec);
+      grasp->insert(std::move(stage));
+    }
+    
     {
       auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("forbid collision (object, support_surface)");
       stage->allowCollisions(object_name,
@@ -771,7 +785,7 @@ mtc::Task MTCTaskNode::createTask()
       {
         auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("detach object");
         stage->detachObject(object_name, hand_frame);
-        attach_object_stage = stage.get();
+        // attach_object_stage = stage.get();
         place->insert(std::move(stage));
       }
     task.add(std::move(place));
@@ -796,10 +810,10 @@ int main(int argc, char** argv)
   auto mtc_task_node = std::make_shared<MTCTaskNode>(options);
   rclcpp::executors::MultiThreadedExecutor executor;
 
-  executor.add_node(mtc_task_node->getNodeBaseInterface());
-
-  auto spin_thread = std::make_unique<std::thread>([&executor]() {
+  auto spin_thread = std::make_unique<std::thread>([&executor, &mtc_task_node]() {
+    executor.add_node(mtc_task_node->getNodeBaseInterface());
     executor.spin();
+    executor.remove_node(mtc_task_node->getNodeBaseInterface());
   });
 
   RCLCPP_INFO(LOGGER, "MTC node is spinning and waiting for button presses...");

@@ -201,6 +201,18 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
+      <joint name="${prefix}robotiq_85_left_finger_tip_joint">
+        <param name="mimic">robotiq_85_left_knuckle_joint</param>
+        <param name="multiplier">-1.0</param>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+      <joint name="${prefix}robotiq_85_right_finger_tip_joint">
+        <param name="mimic">robotiq_85_left_knuckle_joint</param>
+        <param name="multiplier">-1.0</param>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
 
 
 
