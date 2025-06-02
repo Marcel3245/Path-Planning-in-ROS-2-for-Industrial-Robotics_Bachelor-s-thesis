@@ -65,6 +65,8 @@ This project utilizes the ROS 2 Jazzy distribution and the Gazebo Harmonic simul
 
     # Install additional MoveIt 2 tools and planners
     sudo apt install ros-jazzy-moveit*
+    sudo apt install ros-$ROS_DISTRO-rmw-cyclonedds-cpp
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ```
 ## Prepare the Workspace
 
@@ -79,6 +81,7 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
     cat >> ~/.bashrc << EOF
     # Custom aliases for ROS 2 workspace
     export _colcon_cd_root=/opt/ros/jazzy/
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     alias build='cd ~/ros2_ws/ && colcon build --symlink-install && source install/setup.bash'
     # Useful for hard reset of src. Important: remember to build the workspace after! 
     alias reset_ws='cd ~/ros2_ws/ && rm -r /install /build /log && unset AMENT_PREFIX_PATH && unset CMAKE_PREFIX_PATH && source /opt/ros/jazzy/setup.bash'
@@ -113,11 +116,12 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
 
     # Clone the project code into the src directory
     git clone https://github.com/Marcel3245/Path-Planning-in-ROS-2-for-Industrial-Robotics_Bachelor-s-thesis.git .
-    cd plugins/ && git clone https://github.com/moveit/moveit_task_constructor.git 
+    cd plugins/ && git clone https://github.com/moveit/moveit_task_constructor.git -b jazzy
+    cd moveit_task_constructor
     
     # Install the dependencies
     cd ~/ros2_ws/
-    rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
+    rosdep install --from-paths src --ignore-src -r -y
 
     # Build the workspace (using the alias defined above)
     build
