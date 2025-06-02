@@ -134,6 +134,7 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
 To launch the complete system, use the following ROS 2 command from your workspace root:
 
     ```bash
+    # Run the program
     cd ~/ros2_ws/
     ros2 launch mycobot_mtc run.launch.py
     ```
