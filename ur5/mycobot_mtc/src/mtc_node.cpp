@@ -28,6 +28,7 @@
 #include <visualization_msgs/msg/marker_array.hpp>
 
 #include <chrono>
+#include <memory>
 #include <math.h>
 #include <mutex> 
 #include <array>
