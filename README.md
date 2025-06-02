@@ -55,7 +55,7 @@ This project utilizes the ROS 2 Jazzy distribution and the Gazebo Harmonic simul
 
 4. **Install MoveIt 2**
 
-    Ensure you have the necessary MoveIt 2 tools installed. The recommended approach is to follow the official binary installation guide: [https://moveit.ai/install-moveit2/binary/](https://moveit.ai/install-moveit2/binary/)
+    Ensure you have the necessary MoveIt 2 tools installed. The recommended approach is to follow the official binary installation guide: [https://moveit.ai/install-moveit2/binary/]
 
     For a quick installation, you can use the commands below. The second command installs a wider set of tools, including common motion planners like OMPL.
 
