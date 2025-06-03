@@ -1,61 +1,91 @@
 ## Project Core (`UR5`)
 
-This directory (`UR5`) contains the core code for the project, including the UR5, with gripper, description and the main logic. The code is organized into ROS 2 packages.
+This directory (`UR5`) serves as the core repository for the project's code, encompassing the UR5 robot description and the main system logic. The codebase is organized into standard ROS 2 packages.
 
-As described in the ROS 2 documentation, a package serves as an organizational unit for your code, enabling easier installation, sharing, and release.
+As outlined in the official ROS 2 documentation, packages are fundamental organizational units for ROS 2 code, facilitating installation, sharing, and distribution.
 
-Within this directory, you will find the following packages, each starting with `mycobot_` for consistency:
+Within the `UR5` directory, you will find the following seven packages, each prefixed with `mycobot_` for naming consistency:
 
-1.  **`mycobot_description`**: is a package which holds specific information about UR5, from its colision and visual description, to its kinematics parameters and limits.
-```
-      | --- config -> (kinemtaics, limits, etc of the robot)
-      | --- meshes -> (visual and colision description)
-      \ --- urdf -> (combines and translates the robot information into robotic overall description)
-```
-2.  **`mycobot_gazebo`**: is a package which defines gazebo simulation.
-```
-      | --- config -> (describes the bridge communication between ros and gazebo)
-      | --- models -> (stores visual, colision, and parameter descriptions of the parts which are only in gazebo simulation)
-      \ --- worlds -> (describes the simulation world in gazebo: GUI, simulation parts in gz, world parameters, such as gravity or magnetic force, etc)
-```
-3.  **`mycobot_gripper_description`**: is a package which holds specific information about robotiq gripper, its colision and visual description.
-```
-      | --- meshes -> (visual and colision description)
-      \ --- urdf -> (combines and translates the gripper information into robotic overall description)
-```
-4.  **`mycobot_moveit`**: it provides a comprehensive framework for motion planning, manipulation, 3D perception, kinematics, control, and navigation. Essentially, it allows robots to plan and execute movements to interact with their environment. 
-```
-      | --- config -> (important data for MoveIt path planning and robot configuration)
-      | --- srdf -> (Semantic Robot Description Format. It complements the URDF file)
-      \ --- .setup_assistant -> (helps to MoveIt to define final robot description)
-```
-5.  **`mycobot_mtc`**: define and plan complex robot tasks involving multiple, interdependent subtasks.
-```
-      | --- launch -> (stores the possible launch configurations of the program)
-      | --- rviz -> (describes the rviz GUI)
-      \ --- src -> (directory for source code files)
-```
-6.  **`mycobot_opencv`**: define the configuration of object detection, using OpenCV library
-```
-      \ --- mycobot_opencv -> (run the opencv/camera node) 
-```
-7.  **`mycobot_ros2`**: it is the fundamental unit of organization for your code. It's essentially a folder containing files related to a specific functionality or component of a robot system.   
-      
-  
-Each of these packages typically follows a standard ROS 2 structure, including these main files and directories:
+1.  **`mycobot_description`**
+    This package contains the detailed description of the UR5 robot. It includes:
+    *   `config`: Robot-specific configuration files (kinematics, joint limits, etc.).
+    *   `meshes`: Visual and collision geometry files for the robot links.
+    *   `urdf`: The Unified Robot Description Format file that combines all the robot's properties into a single description.
 
-*   **`CMakeLists.txt`**: Defines how to build the code within the package.
-*   **`package.xml`**: Contains meta-information about the package (dependencies, author, etc.).
-*   **`include/<package_name>`**: Directory for public header files.
-*   **`src`**: Directory for source code files (.cpp, .py).
+    ```
+    mycobot_description/
+      ├── config/
+      ├── meshes/
+      └── urdf/
+    ```
 
-A common package structure looks like this:
-```
-my_package/
-      | --- include/my_package/
-      | --- src/
-      | --- package.xml
-      \ --- CMakeLists.txt
-```
+2.  **`mycobot_gazebo`**
+    This package defines the Gazebo simulation environment for the project:
+    *   `config`: Configuration related to the ROS-Gazebo bridge communication.
+    *   `models`: Description files (visual, collision, parameters) for objects used *only* within the Gazebo simulation (e.g., workpieces, tables).
+    *   `worlds`: Files defining the Gazebo world parameters, including the environment layout, static objects, GUI settings, gravity, etc.
 
-For a more detailed understanding of ROS 2 packages, refer to the official documentation: [https://docs.ros.org/en/foxy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html]
+    ```
+    mycobot_gazebo/
+      ├── config/
+      ├── models/
+      └── worlds/
+    ```
+
+3.  **`mycobot_gripper_description`**
+    Contains the specific description for the Robotiq gripper used with the UR5:
+    *   `meshes`: Visual and collision geometry files for the gripper links.
+    *   `urdf`: The URDF file describing the gripper.
+
+    ```
+    mycobot_gripper_description/
+      ├── meshes/
+      └── urdf/
+    ```
+
+4.  **`mycobot_moveit`**
+    This is the MoveIt configuration package for the UR5. MoveIt is a powerful framework providing tools for motion planning, manipulation, perception, kinematics, control, and navigation:
+    *   `config`: Important configuration data for MoveIt's path planning and the robot setup.
+    *   `srdf`: The Semantic Robot Description Format file, which complements the URDF by adding information about robot poses, collision pairs to ignore, and groups of joints.
+    *   `.setup_assistant`: Files generated by the MoveIt Setup Assistant tool, which helps define the final MoveIt configuration for the robot.
+
+    ```
+    mycobot_moveit/
+      ├── config/
+      ├── srdf/
+      └── .setup_assistant/
+    ```
+
+5.  **`mycobot_mtc`**
+    Houses the implementation of the MoveIt Task Constructor (MTC) logic. MTC is used to define and plan complex robot tasks broken down into interdependent subtasks:
+    *   `launch`: Stores ROS 2 launch files for starting different components or the entire system configuration.
+    *   `rviz`: Configuration files for the RViz visualization interface, including panel layouts and displays.
+    *   `src`: Source code files implementing the MTC task sequence and logic.
+
+    ```
+    mycobot_mtc/
+      ├── launch/
+      ├── rviz/
+      └── src/
+    ```
+
+6.  **`mycobot_opencv`**
+    Contains the ROS 2 node(s) and configuration related to object detection using the OpenCV library:
+    *   `mycobot_opencv`: Directory likely containing the source code and specific launch/configuration files for the OpenCV node responsible for camera processing and object detection.
+
+    ```    mycobot_opencv/
+      └── mycobot_opencv/ 
+    ```
+    *(Note: The internal structure of the `mycobot_opencv` subdirectory may vary.)*
+
+7.  **`mycobot_ros2`**
+    This package serves as a fundamental organizational unit for general ROS 2 code within the project. It might contain common utilities, base nodes, or components not specific to description, simulation, or planning. (The specific contents would depend on the project's design).
+
+Each of these packages typically adheres to a standard ROS 2 directory structure, including these key elements:
+
+*   **`CMakeLists.txt`**: Defines how to build the source code within the package.
+*   **`package.xml`**: Contains essential meta-information about the package, such as dependencies, version, author, and description.
+*   **`include/<package_name>`**: Directory designated for public header files that other packages might need to include.
+*   **`src`**: Directory containing the primary source code files (e.g., `.cpp` for C++, `.py` for Python).
+
+A typical structure for a basic ROS 2 package looks like this:
