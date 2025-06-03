@@ -6,14 +6,42 @@ As described in the ROS 2 documentation, a package serves as an organizational u
 
 Within this directory, you will find the following packages, each starting with `mycobot_` for consistency:
 
-1.  **`mycobot_description`**: 
-2.  **`mycobot_gazebo`**: 
-3.  **`mycobot_gripper_description`**: 
-4.  **`mycobot_moveit`**: 
-5.  **`mycobot_mtc`**: 
-6.  **`mycobot_opencv`**: 
-7.  **`mycobot_ros2`**: 
-
+1.  **`mycobot_description`**: is a package which holds specific information about UR5, from its colision and visual description, to its kinematics parameters and limits.
+```
+| --- config -> (kinemtaics, limits, etc of the robot)
+| --- meshes -> (visual and colision description)
+\ --- urdf -> (combines and translates the robot information into robotic overall description)
+```
+2.  **`mycobot_gazebo`**: is a package which defines gazebo simulation.
+```
+| --- config -> (describes the bridge communication between ros and gazebo)
+| --- models -> (stores visual, colision, and parameter descriptions of the parts which are only in gazebo simulation)
+\ --- worlds -> (describes the simulation world in gazebo: GUI, simulation parts in gz, world parameters, such as gravity or magnetic force, etc)
+```
+3.  **`mycobot_gripper_description`**: is a package which holds specific information about robotiq gripper, its colision and visual description.
+```
+| --- meshes -> (visual and colision description)
+\ --- urdf -> (combines and translates the gripper information into robotic overall description)
+```
+4.  **`mycobot_moveit`**: it provides a comprehensive framework for motion planning, manipulation, 3D perception, kinematics, control, and navigation. Essentially, it allows robots to plan and execute movements to interact with their environment. 
+```
+| --- config -> (important data for MoveIt path planning and robot configuration)
+| --- srdf -> (Semantic Robot Description Format. It complements the URDF file)
+\ --- .setup_assistant -> (helps to MoveIt to define final robot description)
+```
+5.  **`mycobot_mtc`**: define and plan complex robot tasks involving multiple, interdependent subtasks.
+```
+| --- launch -> (stores the possible launch configurations of the program)
+| --- rviz -> (describes the rviz GUI)
+\ --- src -> (directory for source code files)
+```
+6.  **`mycobot_opencv`**: define the configuration of object detection, using OpenCV library
+```
+\ --- mycobot_opencv -> (run the opencv/camera node) 
+```
+7.  **`mycobot_ros2`**: it is the fundamental unit of organization for your code. It's essentially a folder containing files related to a specific functionality or component of a robot system.   
+      
+  
 Each of these packages typically follows a standard ROS 2 structure, including these main files and directories:
 
 *   **`CMakeLists.txt`**: Defines how to build the code within the package.
