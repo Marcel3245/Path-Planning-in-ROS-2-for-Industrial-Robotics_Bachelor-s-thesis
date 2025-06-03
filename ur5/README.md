@@ -1,6 +1,6 @@
 ## Project Core (`UR5`)
 
-This directory (`UR5`) contains the core code for the project, including the UR5 description and the main logic. The code is organized into ROS 2 packages.
+This directory (`UR5`) contains the core code for the project, including the UR5, with gripper, description and the main logic. The code is organized into ROS 2 packages.
 
 As described in the ROS 2 documentation, a package serves as an organizational unit for your code, enabling easier installation, sharing, and release.
 
