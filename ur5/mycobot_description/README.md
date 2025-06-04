@@ -1,6 +1,6 @@
 # MyCobot Description Package (`mycobot_description`)
 
-This ROS 2 package provides the URDF (Unified Robot Description Format) model for a MyCobot (based on a Universal Robots UR5 arm) equipped with a Robotiq 85 gripper. It includes descriptions for the robot, its workspace (table, storage units), and integrates with `ros2_control` for both simulation and real hardware.
+This ROS 2 package provides the URDF (Unified Robot Description Format) model for a MyCobot (based on a Universal Robots UR5 arm) equipped with a Robotiq 85 gripper. It includes descriptions for the robot and its workspace (table, storage units) and integrates with `ros2_control` for both simulation and real hardware.
 
 ## Key Features
 
@@ -72,3 +72,5 @@ This package is primarily used to load the `robot_description` parameter, which 
     ```
 
 This package forms the foundation for simulating and controlling the MyCobot in ROS 2.
+
+The code foundation of the robot and gripper description was built on top of Juo Tung Chen, ROS 2 pick and place project [https://github.com/JuoTungChen/ROS2_pick_and_place_UR5/tree/master].
