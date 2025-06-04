@@ -9,7 +9,10 @@
 
   <exec_depend>mycobot_description</exec_depend>
   <exec_depend>mycobot_gazebo</exec_depend>
+  <exec_depend>mycobot_gripper_description</exec_depend>
   <exec_depend>mycobot_moveit</exec_depend>
+  <exec_depend>mycobot_mtc</exec_depend>
+  <exec_depend>mycobot_opencv</exec_depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
