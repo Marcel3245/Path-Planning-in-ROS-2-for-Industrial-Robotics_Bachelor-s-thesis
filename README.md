@@ -84,7 +84,7 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     alias build='cd ~/ros2_ws/ && colcon build --symlink-install && source install/setup.bash'
     # Useful for hard reset of src. Important: remember to build the workspace after! 
-    alias reset_ws='cd ~/ros2_ws/ && rm -r /install /build /log && unset AMENT_PREFIX_PATH && unset CMAKE_PREFIX_PATH && source /opt/ros/jazzy/setup.bash'
+    alias reset_ws='cd ~/ros2_ws/ && rm -r install/ build/ log/ && unset AMENT_PREFIX_PATH && unset CMAKE_PREFIX_PATH && source /opt/ros/jazzy/setup.bash'
 
     # Source the ROS 2 setup file
     source /opt/ros/jazzy/setup.bash
@@ -117,7 +117,6 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
     # Clone the project code into the src directory
     git clone https://github.com/Marcel3245/Path-Planning-in-ROS-2-for-Industrial-Robotics_Bachelor-s-thesis.git .
     cd plugins/ && git clone https://github.com/moveit/moveit_task_constructor.git -b jazzy
-    cd moveit_task_constructor
     
     # Install the dependencies
     cd ~/ros2_ws/
