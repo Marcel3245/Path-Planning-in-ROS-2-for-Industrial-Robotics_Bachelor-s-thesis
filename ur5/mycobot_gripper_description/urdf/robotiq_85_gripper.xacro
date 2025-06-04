@@ -3,12 +3,6 @@
 <robot name="robotiq_85_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:include filename="$(find mycobot_gripper_description)/urdf/robotiq_85_gripper.urdf.xacro" />
   
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"> 
-      <robotNamespace>/</robotNamespace>
-    </plugin> 
-  </gazebo>
-  
   <link name="world"/>
   <joint name="world_fixed" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0"/>
