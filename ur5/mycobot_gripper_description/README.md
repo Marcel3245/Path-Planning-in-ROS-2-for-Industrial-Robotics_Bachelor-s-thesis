@@ -48,3 +48,5 @@ This package is primarily intended to be used as a component within a larger rob
 
 *   The finger tip links have Gazebo-specific tags to enhance grasping physics.
 *   The example `urdf/robotiq_85_gripper.xacro` can be used to spawn the gripper standalone in Gazebo. However, for ROS 2, you would typically use `ros2_control` and the `gz_ros2_control` (Gazebo) or `ign_ros2_control` (Ignition) plugins, which are configured in the robot system that *includes* this gripper.
+   
+The code foundation of the robot and gripper description was built on top of Juo Tung Chen, ROS 2 pick and place project [https://github.com/JuoTungChen/ROS2_pick_and_place_UR5/tree/master].
