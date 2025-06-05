@@ -1,8 +1,8 @@
 # ✅ To Do
 - [ ] Establish connection with the real robot.
-- [ ] Finalize calculations for storage angle localization.
+- [ ] Finalise calculations for storage angle localisation.
 - [ ] Clean up and add comments to the code.
-- [ ] Detect if object is inside the storage (circle).
+- [ ] Detect if the workpiece is inside the storage (circle).
 ---
 ### Legend
 -  [x] Completed
