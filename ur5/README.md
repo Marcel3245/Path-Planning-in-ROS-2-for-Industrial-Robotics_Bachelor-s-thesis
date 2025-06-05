@@ -1,4 +1,15 @@
-## Project Core (`UR5`)
+# ✅ To Do
+- [ ] Establish connection with the real robot.
+- [ ] Finalize calculations for storage angle localization.
+- [ ] Clean up and add comments to the code.
+---
+### Legend
+-  [x] Completed
+-  [ ] Not Started
+- 🚧 Work in Progress
+- ❗ High Priority
+
+# Project Core (`UR5`)
 
 This directory (`UR5`) serves as the core repository for the project's code, encompassing the UR5 robot description and the main system logic. The codebase is organized into standard ROS 2 packages.
 
