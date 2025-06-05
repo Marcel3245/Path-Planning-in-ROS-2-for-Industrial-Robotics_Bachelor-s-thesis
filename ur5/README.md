@@ -2,6 +2,7 @@
 - [ ] Establish connection with the real robot.
 - [ ] Finalize calculations for storage angle localization.
 - [ ] Clean up and add comments to the code.
+- [ ] Detect if object is inside the storage (circle).
 ---
 ### Legend
 -  [x] Completed
