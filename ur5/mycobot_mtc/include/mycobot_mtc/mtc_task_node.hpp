@@ -29,7 +29,7 @@ public:
 private:
     // --- Core MTC and Planning Scene Methods ---
     /** @brief Creates the full MTC pick-and-place task pipeline. */
-    mtc::Task createTask();
+    mtc::Task createTask(int workpiece_id, const geometry_msgs::msg::PoseStamped& target_place_pose_);
 
     /** @brief Executes the planning and execution of the MTC task. */
     void doTask();
@@ -76,9 +76,11 @@ private:
     float y_mid_storage_ = 0.0;
     float z_storage_ = 0.0;
     float alfa_ = 0.0; // Yaw angle for storage
+
+    // Positions of the workpieces 
+    float workpieces_positions_[6][3] = {0};
     
     // Poses used in the task
-    geometry_msgs::msg::PoseStamped target_place_pose_;
     std::optional<geometry_msgs::msg::Pose> start_storage_pose_;
 };
 

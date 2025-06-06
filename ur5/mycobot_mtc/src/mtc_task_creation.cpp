@@ -1,7 +1,7 @@
 #include "mycobot_mtc/mtc_task_node.hpp"
 
 
-mtc::Task MTCTaskNode::createTask()
+mtc::Task MTCTaskNode::createTask(int workpiece_id, const geometry_msgs::msg::PoseStamped& target_place_pose_)
 {
 // ======================================================================================================== //
 // ========================================= PICK AND PLACE =============================================== //
@@ -19,7 +19,7 @@ mtc::Task MTCTaskNode::createTask()
   task.setProperty("eef", eef);
   task.setProperty("ik_frame", hand_frame);
 
-  std::string object_name = "object_5";
+  std::string object_name = "object_" + std::to_string(workpiece_id);
 
   // Disable warnings for this line, as it's a variable that's set but not used in this example
   #pragma GCC diagnostic push

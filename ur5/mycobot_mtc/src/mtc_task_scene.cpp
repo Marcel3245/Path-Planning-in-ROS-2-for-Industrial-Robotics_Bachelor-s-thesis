@@ -20,10 +20,6 @@ std::optional<geometry_msgs::msg::Pose> MTCTaskNode::get_start_storage_pose()
 
         pose.orientation = transform_stamped.transform.rotation;
 
-        RCLCPP_INFO(LOGGER, "TF Lookup successful for %s to %s. Position: (%.3f, %.3f, %.3f), Orientation: (%.3f, %.3f, %.3f, %.3f)",
-                    source_frame.c_str(), target_frame.c_str(),
-                    pose.position.x, pose.position.y, pose.position.z,
-                    pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
 
         return pose;
 
@@ -144,6 +140,12 @@ void MTCTaskNode::setupPlanningScene()
 
             RCLCPP_INFO(LOGGER, "Adding object %zu at (%.3f, %.3f, %.3f) based on TF.",
                         i, object_pose.position.x, object_pose.position.y, object_pose.position.z);
+
+
+            // Store the positions of the workpieces
+            workpieces_positions_[i][0] = object_pose.position.x;
+            workpieces_positions_[i][1] = object_pose.position.y;
+            workpieces_positions_[i][2] = object_pose.position.z;
         }
 
         if (!objects_to_add.empty()) {

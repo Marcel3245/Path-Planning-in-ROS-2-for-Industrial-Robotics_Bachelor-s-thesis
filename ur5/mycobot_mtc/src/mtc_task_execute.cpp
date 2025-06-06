@@ -2,38 +2,75 @@
 
 void MTCTaskNode::doTask()
 {
-  { 
-        std::lock_guard<std::mutex> lock(data_mutex_); 
+    // Declare variables outside the mutex scope so they are accessible later
+    geometry_msgs::msg::PoseStamped target_place_pose_;
+    int closest_workpiece_id;
 
-        if (!circles_data_received_) { 
-            RCLCPP_ERROR(LOGGER, "No camera data received yet. Cannot set target place pose for MTC."); 
+    { // Scope for the mutex lock
+        std::lock_guard<std::mutex> lock(data_mutex_); 
+        if (!circles_data_received_ || !storage_pose_data_received_ || !start_storage_pose_) {
+            RCLCPP_ERROR(LOGGER, "Cannot run MTC task, required data is missing.");
             return;
         }
-        if (std::abs(data_array_[5][0]) < 1e-6 && std::abs(data_array_[5][1]) < 1e-6 && std::abs(data_array_[5][2]) < 1e-6) { 
-            RCLCPP_ERROR(LOGGER, "Camera data for object 5 appears invalid (all zeros). Cannot set target place pose for MTC.");
-            return; 
+
+        // --- Find the furthest target ---
+        float max_target_distance = 0; 
+        int furthest_target_index = -1;   
+
+        for (int i = 0; i < 6; i++)
+        {
+            float current_distance = sqrt(pow(data_array_[i][0], 2) + pow(data_array_[i][1], 2));
+            if (current_distance > max_target_distance) 
+            {
+                max_target_distance = current_distance;
+                furthest_target_index = i;
+            }
         }
 
+        if (furthest_target_index == -1) {
+            RCLCPP_ERROR(LOGGER, "Could not determine the furthest target.");
+            return;
+        }
+
+        // --- Find the closest workpiece ---
+        float min_workpiece_distance = std::numeric_limits<float>::max();
+        int closest_workpiece_index = -1;
+
+        for (int i = 0; i < 6; i++) 
+        {
+            float current_distance = sqrt(pow(workpieces_positions_[i][0], 2) + pow(workpieces_positions_[i][1], 2));
+            if (current_distance < min_workpiece_distance) 
+            {
+                min_workpiece_distance = current_distance;
+                closest_workpiece_index = i;
+            }
+        }
+        
+        if (closest_workpiece_index == -1) {
+            RCLCPP_ERROR(LOGGER, "Could not determine the closest workpiece.");
+            return;
+        }
+
+        // Assign the found index to the variable in the outer scope
+        closest_workpiece_id = closest_workpiece_index;
+
+        // Populate the pose message
         target_place_pose_.header.frame_id = "world"; 
         target_place_pose_.header.stamp = node_->now(); 
-        target_place_pose_.pose.position.x = data_array_[5][0];
-        target_place_pose_.pose.position.y = data_array_[5][1];
-        target_place_pose_.pose.position.z = data_array_[5][2] + 0.005 + 0.001; // Adjusted height
+        target_place_pose_.pose.position.x = data_array_[furthest_target_index][0];
+        target_place_pose_.pose.position.y = data_array_[furthest_target_index][1];
+        target_place_pose_.pose.position.z = data_array_[furthest_target_index][2] + 0.005 + 0.001; // Adjusted height
         target_place_pose_.pose.orientation.w = 1.0; 
 
-        RCLCPP_INFO(LOGGER, "Setting target place pose for THIS task run to (%.3f, %.3f, %.3f)",
-                    target_place_pose_.pose.position.x, 
-                    target_place_pose_.pose.position.y, 
-                    target_place_pose_.pose.position.z);
-    }
+    } // Mutex is released here
 
-    task_ = createTask();
+    task_ = createTask(closest_workpiece_id, target_place_pose_);
 
     try
     {
         task_.init();
     }
-        catch (mtc::InitStageException& e)
+    catch (mtc::InitStageException& e)
     {
         RCLCPP_ERROR_STREAM(LOGGER, "Task initialization failed: " << e.what()); 
         return; 

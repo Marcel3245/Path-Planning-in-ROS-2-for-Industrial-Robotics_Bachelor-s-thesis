@@ -27,10 +27,6 @@ MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
   tf_listener_ = std::make_unique<tf2_ros::TransformListener>(*tf_buffer_);
 
-  // --- Initialize State and Pose Variables ---
-  target_place_pose_.header.frame_id = "world";
-  target_place_pose_.pose.orientation.w = 1.0;
-
   // Perform initial TF lookup for the storage pose
   start_storage_pose_ = get_start_storage_pose();
 
