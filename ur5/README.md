@@ -3,6 +3,7 @@
 - [ ] Finalise calculations for storage angle localisation.
 - [ ] Clean up and add comments to the code.
 - [ ] Detect if the workpiece is inside the storage (circle).
+- [ ] Store all 6 parts in the target storage.
 ---
 ### Legend
 -  [x] Completed
