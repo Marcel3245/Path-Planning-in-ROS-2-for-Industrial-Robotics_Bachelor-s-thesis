@@ -7,28 +7,36 @@
   <maintainer email="pan.balwanek.89@gmail.com">marcel3245</maintainer>
   <license>Apache-2.0</license>
 
-  <depend>moveit_task_constructor_core</depend>
-  <depend>rclcpp</depend>
-  <depend>generate_parameter_library</depend>
-  <depend>moveit_core</depend>
-
-
-  <depend>moveit_ros_planning_interface</depend>
-  <depend>moveit_ros_move_group</depend>
-  <depend>moveit_kinematics</depend>
-  <depend>moveit_planners_ompl</depend>
-  <depend>moveit_ros_visualization</depend>
-  <depend>rviz2</depend>
-  <depend>robotiq_description</depend>
-  <depend>ur_description</depend>
-  <depend>rviz_visual_tools</depend>
-  <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>moveit_simple_controller_manager</exec_depend>
-  <exec_depend>moveit_configs_utils</exec_depend>
-  <exec_depend>pilz_industrial_motion_planner</exec_depend>
-
+  <!-- Build tool dependency -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!-- Core ROS 2 and MoveIt Dependencies for C++ code -->
+  <depend>rclcpp</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>geometric_shapes</depend>
+  <depend>rviz_visual_tools</depend>
+
+  <!-- MoveIt Task Constructor Dependencies -->
+  <depend>moveit_task_constructor_core</depend>
+
+  <!-- TF2 and Message Dependencies -->
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_eigen</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+
+  <!-- Dependencies for Launch File -->
+  <exec_depend>mycobot_opencv</exec_depend> <!-- Added because your launch file runs it -->
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_configs_utils</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>ros_gz_sim</exec_depend> 
+  <exec_depend>ros_gz_bridge</exec_depend> 
+
+  <!-- Dependencies for testing/linting -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
