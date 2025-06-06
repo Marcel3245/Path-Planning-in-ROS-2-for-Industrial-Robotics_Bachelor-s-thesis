@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+    <model name="workpiece">
+        <link name="link">
+            <gravity>true</gravity>
+            <inertial>
+                <mass>0.15</mass> 
+                <inertia>
+                    <ixx>0.00003</ixx> 
+                    <iyy>0.00003</iyy>
+                    <izz>0.00002</izz>
+                </inertia>
+            </inertial>
+            <collision name="collision1">
+                <geometry>
+                    <cylinder>
+                        <radius>0.008</radius> 
+                        <length>0.046</length>
+                    </cylinder>
+                    <!-- <mesh><uri>collision/workpiece.stl</uri></mesh> -->
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                        <mu>5.0</mu>
+                        <mu2>5.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>1000000.0</kp>
+                            <kd>1.0</kd>
+                            <min_depth>0.001</min_depth>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <collision name="collision2">
+                <pose>0 0 -0.018 0 0 0</pose> 
+                <geometry>
+                    <cylinder>
+                        <radius>0.021</radius> 
+                        <length>0.01</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <pose>0 0 -0.023 0 0 0</pose>
+                <geometry>
+                    <mesh><uri>visual/workpiece.dae</uri></mesh>
+                </geometry>
+            </visual>
+
+        </link>
+    </model>
+</sdf>

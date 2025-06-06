@@ -79,5 +79,43 @@
       <uri>model://storage</uri>
         <pose>-0.25 0.35 0.95 0 0 0</pose>
     </include>
+
+    <!-- Workpieces -->
+    <!-- Object 0: ( -0.010, -0.417, 0.947 0 0 0 ) -->
+    <include>
+      <uri>model://workpiece</uri>
+      <pose>-0.010, -0.417, 0.947 0 0 0</pose>
+      <name>object_0</name>
+    </include>
+    <!-- Object 1: ( -0.070, -0.417, 0.947 0 0 0 ) -->
+    <include>
+      <uri>model://workpiece</uri>
+      <pose>-0.070, -0.417, 0.947 0 0 0</pose>
+      <name>object_1</name>
+    </include>
+    <!-- Object 2: ( -0.130, -0.417, 0.947 0 0 0 ) -->
+    <include>
+      <uri>model://workpiece</uri>
+      <pose>-0.130, -0.417, 0.947 0 0 0</pose>
+      <name>object_2</name>
+    </include>
+    <!-- Object 3: ( -0.010 -0.353 0.947 0 0 0 ) -->
+    <include>
+      <uri>model://workpiece</uri>
+      <pose>-0.010 -0.353 0.947 0 0 0</pose>
+      <name>object_3</name>
+    </include>
+    <!-- Object 4: ( -0.070 -0.353 0.947 0 0 0 ) -->
+    <include>
+      <uri>model://workpiece</uri>
+      <pose>-0.070 -0.353 0.947 0 0 0</pose>
+      <name>object_4</name>
+    </include>
+    <!-- Object 5: ( -0.130 -0.353 0.947 0 0 0 ) -->
+    <include>
+      <uri>model://workpiece</uri>
+      <pose>-0.130 -0.353 0.97 0 0 0</pose>
+      <name>object_5</name>
+    </include>
   </world>
 </sdf>

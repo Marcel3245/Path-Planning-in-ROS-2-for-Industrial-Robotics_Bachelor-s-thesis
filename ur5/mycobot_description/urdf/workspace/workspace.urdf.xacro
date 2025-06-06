@@ -49,5 +49,31 @@
             <child link="start_storage"/>
             <origin xyz="-0.07 -0.385 0.9" rpy="0 0 0"/>
         </joint>
+
+
+        <!-- Test obstacle -->
+        <!-- <link name="obstacle">
+            <inertial>
+                <mass value="10.0" />
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+            </inertial>
+            <visual>
+                <geometry>
+                    <box size="0.2 0.2 0.2" />
+                </geometry>
+            </visual>
+            <collision>
+                <geometry>
+                    <box size="0.02 0.02 0.02" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${parent}_obstacle" type="fixed">
+            <parent link="${parent}"/>
+            <child link="obstacle"/>
+            <origin xyz="-0.2 0 1.09" rpy="0 0 0"/>
+        </joint> -->
     </xacro:macro>
 </robot>

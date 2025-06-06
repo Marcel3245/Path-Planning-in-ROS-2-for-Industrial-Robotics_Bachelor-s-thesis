@@ -1,15 +1,12 @@
 import os
-from launch.actions import DeclareLaunchArgument
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, PythonExpression
+from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 from launch import LaunchDescription
-from launch_ros.substitutions import FindPackageShare
-from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.actions import RegisterEventHandler
 from launch.conditions import IfCondition
-from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler
-from launch.event_handlers import OnProcessExit
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, TimerAction
+from launch.event_handlers import OnProcessExit, OnExecutionComplete
 from pathlib import Path
 from ament_index_python.packages import get_package_share_directory
 from yaml import safe_load
@@ -21,16 +18,15 @@ def load_yaml(directory):
 
 def declare_arguments():
     return [
-        DeclareLaunchArgument( 'use_sim', default_value='true', description='Start robot in Gazebo simulation.'),
+        DeclareLaunchArgument( 'use_sim', default_value='True', description='Start robot in Gazebo simulation.'),
         DeclareLaunchArgument( 'robot_ip', default_value='0.0.0.0', description='IP address of the robot.'),
-        DeclareLaunchArgument( 'use_fake_hardware', default_value='false', description='Use fake hardware interface.'),
-        DeclareLaunchArgument( 'sim_gazebo', default_value='true', description='Use Gazebo simulation.'),
-        DeclareLaunchArgument( 'sim_ignition', default_value='false', description='Use Ignition simulation.'),
-        DeclareLaunchArgument( 'use_sim', default_value='true', description='Start robot in Gazebo simulation.'),
-        DeclareLaunchArgument( 'safety_limits', default_value='true', description='Enables the safety limits controller if true.'),
+        DeclareLaunchArgument( 'use_fake_hardware', default_value='False', description='Use fake hardware interface.'),
+        DeclareLaunchArgument( 'sim_gazebo', default_value='True', description='Use Gazebo simulation.'),
+        DeclareLaunchArgument( 'sim_ignition', default_value='False', description='Use Ignition simulation.'),
+        DeclareLaunchArgument( 'safety_limits', default_value='True', description='Enables the safety limits controller if true.'),
         DeclareLaunchArgument( 'safety_pos_margin', default_value='0.15', description='The margin to lower and upper limits in the safety controller.'),
-        DeclareLaunchArgument( 'safety_k_position', default_value='20', description='k-position factor in the safety controller.',),
-        DeclareLaunchArgument( 'depth_camera', default_value='false', description='Enable depth camera simulation.'),
+        DeclareLaunchArgument( 'safety_k_position', default_value='20', description='k-position factor in the safety controller.'),
+        DeclareLaunchArgument( 'depth_camera', default_value='False', description='Enable depth camera simulation.'),
     ]
 
 def generate_launch_description():
@@ -214,6 +210,16 @@ def generate_launch_description():
     )
 
    ## ============================================================= CONTROLLERS INITIALIZATION ============================================================= ##
+    ros2_controller_manager_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[ros2_controllers_path],
+        remappings=[
+            ("/controller_manager/robot_description", "/robot_description"),
+        ],
+        condition=IfCondition(PythonExpression(["not ", LaunchConfiguration("sim_gazebo")])),
+    )    
+    
     # Spawner Node for Joint State Broadcaster
     jsb_spawner = Node(
         package='controller_manager',
@@ -242,7 +248,8 @@ def generate_launch_description():
         package='tf2_ros',
         executable='static_transform_publisher',
         output='screen',
-        arguments=['0', '0', '0.92', '0', '0', '0', 'world', 'base_link']
+        arguments=['0', '0', '0.92', '0', '0', '0', 'world', 'base_link'],
+        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}]
     )
 
     camera_model_tf = Node(
@@ -259,7 +266,10 @@ def generate_launch_description():
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="screen",
-        parameters=[robot_description],
+        parameters=[
+            robot_description,
+            {"use_sim_time": LaunchConfiguration("use_sim")}, 
+                    ],
     )
         
     # Controller Manager
@@ -267,7 +277,11 @@ def generate_launch_description():
         package="controller_manager",
         condition=IfCondition(LaunchConfiguration("use_fake_hardware")),
         executable="ros2_control_node",
-        parameters=[robot_description, ros2_controllers_path],
+        parameters=[
+            robot_description, 
+            ros2_controllers_path,
+            {"use_sim_time": LaunchConfiguration("use_sim")},
+            ],
         output="both",
     )
 
@@ -296,7 +310,8 @@ def generate_launch_description():
             # Pass as a single string with space separation
             'gz_args': f'-r {world_path}',
             'on_exit_shutdown': 'true'
-            }.items()
+            }.items(),
+        condition=IfCondition(LaunchConfiguration("sim_gazebo")),
     )
     
     spawn_ur5 = Node(
@@ -307,6 +322,7 @@ def generate_launch_description():
             '-string', robot_description_content,
         ],
         output='screen',
+        condition=IfCondition(LaunchConfiguration("sim_gazebo")),
     )
 
     bridge_params = os.path.join(gazebo_config_path, 'ros_gz_bridge.yaml')
@@ -319,11 +335,13 @@ def generate_launch_description():
             f'config_file:={bridge_params}',
         ],
         output='screen',
+        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}],
+        condition=IfCondition(LaunchConfiguration("sim_gazebo")),
     )
     
    ## ================================================================ RVIZ INITIALIZATION ================================================================= ##
     rviz_config_path = os.path.join(mtc_path, 'rviz', 'mtc_rviz.rviz')
-    rviz2 = RegisterEventHandler(
+    rviz2_node = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=jsb_spawner,
             on_exit=[
@@ -338,6 +356,7 @@ def generate_launch_description():
                         robot_description_semantic,
                         kinematics_params,
                         joint_limits_param,
+                        {"use_sim_time": LaunchConfiguration("use_sim")},
                     ]
                 ),
             ],
@@ -350,6 +369,7 @@ def generate_launch_description():
         executable='img_pubsub',
         name='opencv',
         output='screen',
+        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}],
     )
     pick_and_place = Node(
         package="mycobot_mtc",
@@ -371,10 +391,16 @@ def generate_launch_description():
     ld.add_action(gazebo_launch)
     ld.add_action(spawn_ur5)
     ld.add_action(gazebo_ros_bridge)
-    ld.add_action(rviz2)
+    ld.add_action(rviz2_node)
     ld.add_action(move_group_node)
     ld.add_action(ros2_control_node)
-    ld.add_action(jsb_spawner)
+  
+    # To run the joint state broadcaster after the gazebo simulation launch is completed  
+    ld.add_action(TimerAction(
+        period=4.0,
+        actions=[jsb_spawner],
+    ))
+                    
     ld.add_action(RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=jsb_spawner,
@@ -387,4 +413,7 @@ def generate_launch_description():
             on_exit=[gripper_spawner],
         )
     ))
+    
+    # If sim_gazebo:=False
+    ld.add_action(ros2_controller_manager_node)
     return ld

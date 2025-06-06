@@ -20,7 +20,8 @@
 #include <tf2_ros/transform_listener.h>
 #include <tf2/time.h>
 #include <tf2/utils.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2/LinearMath/Quaternion.h> // Needed for tf2::Quaternion
+
 
 #include "std_msgs/msg/float64_multi_array.hpp"
 #include "std_msgs/msg/bool.hpp" // Include for Bool message
@@ -58,10 +59,8 @@ private:
   void circles_data_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
   // New callback specifically for the storage data
   void storage_data_callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg);
-
   void spawn_workpieces_callback(const std_msgs::msg::Bool::SharedPtr msg);
   void run_mtc_callback(const std_msgs::msg::Bool::SharedPtr msg);
-
 
   mtc::Task task_;
   rclcpp::Node::SharedPtr node_;
@@ -197,7 +196,7 @@ void MTCTaskNode::circles_data_callback(const std_msgs::msg::Float64MultiArray::
             marker_array.markers[i].color.b = 0.0f;
         }
         marker_array.markers[i].color.a = 1.0f;
-        marker_array.markers[i].lifetime = rclcpp::Duration::from_seconds(2.0);
+        marker_array.markers[i].lifetime = rclcpp::Duration(0, 0);
     }
 
     marker_pub_->publish(marker_array);
@@ -260,7 +259,7 @@ void MTCTaskNode::storage_data_callback(const std_msgs::msg::Float64MultiArray::
     storage_marker.color.a = 0.7f; // Slightly transparent
 
     // Set lifetime so it doesn't disappear immediately
-    storage_marker.lifetime = rclcpp::Duration::from_seconds(2.0); // Stays for 2 seconds, then refreshed
+    storage_marker.lifetime = rclcpp::Duration(0, 0); // Stays for 2 seconds, then refreshed
 
     // Publish the marker (wrap in MarkerArray)
     visualization_msgs::msg::MarkerArray marker_array_storage;
@@ -420,12 +419,6 @@ void MTCTaskNode::setupPlanningScene()
     // }
 
 
-    // The following block adds smaller cylinder objects,
-    // which seems intended for the pick locations *within* the storage.
-    // This part uses the TF lookup `start_storage_pose_`, which might be different
-    // from the pose derived from camera data for the main storage mesh.
-    // This section is kept from the original code structure but note the potential
-    // inconsistency if the TF and camera data for storage base are not aligned.
     if (start_storage_pose_) {
         const geometry_msgs::msg::Pose& storage_pose = start_storage_pose_.value();
 
@@ -478,12 +471,36 @@ void MTCTaskNode::setupPlanningScene()
             object.id = "object_" + std::to_string(i);
             object.header.frame_id = "world";
 
-            shape_msgs::msg::SolidPrimitive cylinder;
-            cylinder.type = shape_msgs::msg::SolidPrimitive::CYLINDER;
-            cylinder.dimensions.resize(2);
-            cylinder.dimensions[0] = 0.043; // Height
-            cylinder.dimensions[1] = 0.008; // Radius
-            object.primitives.push_back(cylinder);
+            shape_msgs::msg::SolidPrimitive cylinder1, cylinder2;
+            cylinder1.type = shape_msgs::msg::SolidPrimitive::CYLINDER;
+            cylinder2.type = shape_msgs::msg::SolidPrimitive::CYLINDER;
+
+            // Cylinder 1: Height = 0.033, Radius = 0.008
+            cylinder1.dimensions.resize(2);
+            cylinder1.dimensions[0] = 0.033;
+            cylinder1.dimensions[1] = 0.008;
+
+            // Cylinder 2: Height = 0.01, Radius = 0.021
+            cylinder2.dimensions.resize(2);
+            cylinder2.dimensions[0] = 0.01;
+            cylinder2.dimensions[1] = 0.021;
+
+            // Create poses
+            geometry_msgs::msg::Pose cylinder1_pose;
+            cylinder1_pose.orientation.w = 1.0;
+            cylinder1_pose.position.z = (cylinder1.dimensions[0] / 2.0) + (cylinder2.dimensions[0] / 2.0); 
+
+            geometry_msgs::msg::Pose cylinder2_pose;
+            cylinder2_pose.orientation.w = 1.0;
+            cylinder2_pose.position.z = 0;  // Move this cylinder downward
+
+            // Add to collision object
+            object.primitives.push_back(cylinder1);
+            object.primitive_poses.push_back(cylinder1_pose);
+
+            object.primitives.push_back(cylinder2);
+            object.primitive_poses.push_back(cylinder2_pose);
+
 
             // Calculate position relative to the TF frame pose
             if (is_yaw_plus_minus_90) {
@@ -494,7 +511,7 @@ void MTCTaskNode::setupPlanningScene()
                  object_pose.position.y = storage_pose.position.y + x_diff[i];
             }
 
-            object_pose.position.z = cylinder.dimensions[0]/2 + z_offset; // Z relative to TF Z base + cylinder half height
+            object_pose.position.z = (cylinder2.dimensions[0] / 2.0) + z_offset; // Z relative to TF Z base + cylinder half height
 
             object_pose.orientation = storage_pose.orientation; // Inherit orientation from TF
 
@@ -519,6 +536,7 @@ void MTCTaskNode::setupPlanningScene()
         RCLCPP_WARN(LOGGER, "Start storage TF pose not available. Cannot add smaller collision objects.");
     }
 }
+
 void MTCTaskNode::doTask()
 {
   { 
@@ -537,7 +555,7 @@ void MTCTaskNode::doTask()
       target_place_pose_.header.stamp = node_->now(); 
       target_place_pose_.pose.position.x = data_array[5][0];
       target_place_pose_.pose.position.y = data_array[5][1];
-      target_place_pose_.pose.position.z = data_array[5][2] + 0.043/2 + 0.001; // Adjusted height
+      target_place_pose_.pose.position.z = data_array[5][2] + 0.005 + 0.001; // Adjusted height
       target_place_pose_.pose.orientation.w = 1.0; 
 
       RCLCPP_INFO(LOGGER, "Setting target place pose for THIS task run to (%.3f, %.3f, %.3f)",
@@ -675,7 +693,10 @@ mtc::Task MTCTaskNode::createTask()
                                    Eigen::AngleAxisd(M_PI / 2.0, Eigen::Vector3d::UnitY()) *
                                    Eigen::AngleAxisd(M_PI / 2.0, Eigen::Vector3d::UnitZ());
     grasp_frame_transform.linear() = q_initial.matrix();
+    // The grassping distance (front, y-right/left)
     grasp_frame_transform.translation().z() = 0.095;
+    // The grassping height
+    grasp_frame_transform.translation().x() = -0.025;
 
 
     // Compute IK
