@@ -7,7 +7,7 @@ mtc::Task MTCTaskNode::createTask(int workpiece_id, const geometry_msgs::msg::Po
 // ========================================= PICK AND PLACE =============================================== //
 // ======================================================================================================== //
   mtc::Task task;
-  task.stages()->setName("Pick and Place Task");
+  task.stages()->setName("Pick and Place Task for the object_" + std::to_string(workpiece_id));
   task.loadRobotModel(node_);
 
   const auto& arm_group_name = "arm_controller";
@@ -45,7 +45,6 @@ mtc::Task MTCTaskNode::createTask(int workpiece_id, const geometry_msgs::msg::Po
   stage_open_hand->setGroup(hand_group_name);
   stage_open_hand->setGoal("open");
   task.add(std::move(stage_open_hand));
-
 
   // ======================================== MOVE TO PICK ============================================== //
   auto stage_move_to_pick = std::make_unique<mtc::stages::Connect>("move to pick",

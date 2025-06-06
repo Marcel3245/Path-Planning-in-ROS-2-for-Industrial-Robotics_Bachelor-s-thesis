@@ -59,7 +59,7 @@ void MTCTaskNode::doTask()
         target_place_pose_.header.stamp = node_->now(); 
         target_place_pose_.pose.position.x = data_array_[furthest_target_index][0];
         target_place_pose_.pose.position.y = data_array_[furthest_target_index][1];
-        target_place_pose_.pose.position.z = data_array_[furthest_target_index][2] + 0.005 + 0.001; // Adjusted height
+        target_place_pose_.pose.position.z = workpieces_positions_[furthest_target_index][2] + 0.001;
         target_place_pose_.pose.orientation.w = 1.0; 
 
     } // Mutex is released here
