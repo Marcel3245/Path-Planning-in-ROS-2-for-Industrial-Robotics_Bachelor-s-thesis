@@ -151,3 +151,37 @@ To launch the complete system, use the following ROS 2 command from your workspa
     
 The system is configured to find a specific number of trajectories (as defined in the code).
 If the MTC search is successful, the UR5 manipulator will automatically execute the trajectory determined to be the "cheapest" based on predefined cost metrics (also configured in the code). You can observe the robot's movement and the simulated workpiece transfer from the start to the target storage within the Gazebo simulation window, reflecting the planned real-world behavior.
+
+
+## Possible Problems
+
+You might encounter a `Segmentation fault (Address not mapped to object [0xe8])` error when attempting to execute a trajectory found by MoveIt Task Constructor (MTC). This is a known issue.
+
+For a detailed description and discussion, please refer to this GitHub issue: [https://github.com/moveit/moveit_task_constructor/issues/692](https://github.com/moveit/moveit_task_constructor/issues/692)
+
+**Solution:**
+
+To resolve this issue, you need to install MoveIt 2 from source instead of using the binary distribution, as the fix for this bug is typically available in the source before a new binary release.
+
+Follow these steps:
+
+1.  **Remove the existing binary installation:**
+    ```bash
+    sudo apt remove ros-jazzy-moveit*
+    reset_ws
+    ```
+2.  **Navigate to your workspace source directory:**
+    ```bash
+    cd ~/ros2_ws/src/plugins/ # Adjust path if your plugins directory is elsewhere
+    ```
+3.  **Clone the MoveIt 2 source code:**
+    ```bash
+    git clone -b jazzy https://github.com/moveit/moveit2.git
+    ```
+4.  **Build your workspace:**
+    ```bash
+    build
+    ```
+    *(This will build all packages in your workspace, including the newly cloned MoveIt 2 source, applying the necessary fix.)*
+
+After a successful build, the segmentation fault should be resolved.
