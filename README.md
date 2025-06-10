@@ -152,6 +152,11 @@ To launch the complete system, use the following ROS 2 command from your workspa
 The system is configured to find a specific number of trajectories (as defined in the code).
 If the MTC search is successful, the UR5 manipulator will automatically execute the trajectory determined to be the "cheapest" based on predefined cost metrics (also configured in the code). You can observe the robot's movement and the simulated workpiece transfer from the start to the target storage within the Gazebo simulation window, reflecting the planned real-world behavior.
 
+https://github.com/user-attachments/assets/7fd1c0f5-ece4-40ba-8535-5647a472f274
+
+https://github.com/user-attachments/assets/875f37a6-1aff-492c-b158-e11d81ab6dba
+
+https://github.com/user-attachments/assets/b2e660de-b8a7-461a-8d87-1d067a61f9bd
 
 ## Possible Problems
 
