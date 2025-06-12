@@ -65,7 +65,7 @@ This project utilizes the ROS 2 Jazzy distribution and the Gazebo Harmonic simul
 
     # Install additional MoveIt 2 tools and planners
     sudo apt install ros-jazzy-moveit*
-    sudo apt install ros-$ROS_DISTRO-rmw-cyclonedds-cpp
+    sudo apt install ros-jazzy-rmw-cyclonedds-cpp
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     ```
 ## Prepare the Workspace
