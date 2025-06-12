@@ -4,7 +4,8 @@ void MTCTaskNode::doTask()
 {
     // Declare variables outside the mutex scope so they are accessible later
     geometry_msgs::msg::PoseStamped target_place_pose_;
-    int closest_workpiece_id;
+    std::list<int> furthest_target_ids;
+    std::list<int> closest_workpiece_ids;
 
     { // Scope for the mutex lock
         std::lock_guard<std::mutex> lock(data_mutex_); 
@@ -13,58 +14,81 @@ void MTCTaskNode::doTask()
             return;
         }
 
-        // --- Find the furthest target ---
-        float max_target_distance = 0; 
-        int furthest_target_index = -1;   
+        // --- Find the furthest targets in descending order ---
+        std::vector<std::vector<float>> targets_computed_data_array; 
+        targets_computed_data_array.resize(2);
 
         for (int i = 0; i < 6; i++)
         {
-            float current_distance = sqrt(pow(data_array_[i][0], 2) + pow(data_array_[i][1], 2));
-            if (current_distance > max_target_distance) 
+            if(data_array_[i][3] == 0) {
+                float distance = sqrt(pow(data_array_[i][0], 2) + pow(data_array_[i][1], 2));
+                if (distance != 0) {
+                    targets_computed_data_array[0].push_back(static_cast<int>(i));
+                    targets_computed_data_array[1].push_back(distance); 
+                }
+                else 
+                {
+                    continue;
+                }
+            } 
+            else 
             {
-                max_target_distance = current_distance;
-                furthest_target_index = i;
+                continue;
             }
         }
 
-        if (furthest_target_index == -1) {
-            RCLCPP_ERROR(LOGGER, "Could not determine the furthest target.");
-            return;
+        for (int step = 0; step < targets_computed_data_array[1].size() - 1; step++) 
+        {
+            for (int i = 0; i < targets_computed_data_array[1].size() - step - 1; i++) 
+            {
+                if (targets_computed_data_array[1][i] < targets_computed_data_array[1][i + 1]) 
+                {
+                    std::swap(targets_computed_data_array[0][i], targets_computed_data_array[0][i + 1]);
+                    std::swap(targets_computed_data_array[1][i], targets_computed_data_array[1][i + 1]);
+                }
+            }
         }
+        
+        for (int i = 0; i < targets_computed_data_array[0].size(); i++) 
+        {
+            furthest_target_ids.push_back(static_cast<int>(targets_computed_data_array[0][i]));
+        }        
 
-        // --- Find the closest workpiece ---
-        float min_workpiece_distance = std::numeric_limits<float>::max();
-        int closest_workpiece_index = -1;
+
+        // --- Find the closest workpieces in ascending order ---
+        std::vector<std::vector<float>> workpieces_computed_data_array;
 
         for (int i = 0; i < 6; i++) 
         {
             float current_distance = sqrt(pow(workpieces_positions_[i][0], 2) + pow(workpieces_positions_[i][1], 2));
-            if (current_distance < min_workpiece_distance) 
+            if (current_distance != 0) {
+                workpieces_computed_data_array[0].push_back(static_cast<int>(i));
+                workpieces_computed_data_array[1].push_back(current_distance);
+            } 
+            else 
             {
-                min_workpiece_distance = current_distance;
-                closest_workpiece_index = i;
+                continue;
             }
         }
-        
-        if (closest_workpiece_index == -1) {
-            RCLCPP_ERROR(LOGGER, "Could not determine the closest workpiece.");
-            return;
+
+        for (int step = 0; step < workpieces_computed_data_array[1].size() - 1; step++) 
+        {
+            for (int i = 0; i < workpieces_computed_data_array[1].size() - step - 1; i++) 
+            {
+                if (workpieces_computed_data_array[1][i] > workpieces_computed_data_array[1][i + 1]) 
+                {
+                    std::swap(workpieces_computed_data_array[0][i], workpieces_computed_data_array[0][i + 1]);
+                    std::swap(workpieces_computed_data_array[1][i], workpieces_computed_data_array[1][i + 1]);
+                }
+            }
         }
-
-        // Assign the found index to the variable in the outer scope
-        closest_workpiece_id = closest_workpiece_index;
-
-        // Populate the pose message
-        target_place_pose_.header.frame_id = "world"; 
-        target_place_pose_.header.stamp = node_->now(); 
-        target_place_pose_.pose.position.x = data_array_[furthest_target_index][0];
-        target_place_pose_.pose.position.y = data_array_[furthest_target_index][1];
-        target_place_pose_.pose.position.z = workpieces_positions_[furthest_target_index][2] + 0.001;
-        target_place_pose_.pose.orientation.w = 1.0; 
-
+        for (int i = 0; i < workpieces_computed_data_array[0].size(); i++) 
+        {
+            closest_workpiece_ids.push_back(static_cast<int>(workpieces_computed_data_array[0][i]));
+        }
     } // Mutex is released here
 
-    task_ = createTask(closest_workpiece_id, target_place_pose_);
+    task_ = createTask(closest_workpiece_ids, furthest_target_ids);
 
     try
     {
