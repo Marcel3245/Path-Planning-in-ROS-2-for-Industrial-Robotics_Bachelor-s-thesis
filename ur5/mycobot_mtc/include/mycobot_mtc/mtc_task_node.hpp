@@ -29,7 +29,7 @@ public:
 private:
     // --- Core MTC and Planning Scene Methods ---
     /** @brief Creates the full MTC pick-and-place task pipeline. */
-    mtc::Task createTask(std::list<int> workpiece_id, std::list<int> target_place_pose);
+    mtc::Task createTask(int workpiece_id, int target_place);
 
     /** @brief Executes the planning and execution of the MTC task. */
     void doTask();

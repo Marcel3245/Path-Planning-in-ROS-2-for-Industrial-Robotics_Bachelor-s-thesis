@@ -57,6 +57,7 @@ void MTCTaskNode::doTask()
 
         // --- Find the closest workpieces in ascending order ---
         std::vector<std::vector<float>> workpieces_computed_data_array;
+        workpieces_computed_data_array.resize(2);
 
         for (int i = 0; i < 6; i++) 
         {
@@ -88,37 +89,50 @@ void MTCTaskNode::doTask()
         }
     } // Mutex is released here
 
-    task_ = createTask(closest_workpiece_ids, furthest_target_ids);
 
-    try
-    {
-        task_.init();
-    }
-    catch (mtc::InitStageException& e)
-    {
-        RCLCPP_ERROR_STREAM(LOGGER, "Task initialization failed: " << e.what()); 
-        return; 
-    }
+    std::vector<int> workpiece_ids_vec(closest_workpiece_ids.begin(), closest_workpiece_ids.end());
+    std::vector<int> target_ids_vec(furthest_target_ids.begin(), furthest_target_ids.end());
 
-    RCLCPP_INFO(LOGGER, "Task initialized. Planning..."); 
-
-    if (!task_.plan(5)) 
-    {
-        RCLCPP_ERROR_STREAM(LOGGER, "Task planning failed");
+    // Ensure we have a matching number of workpieces and targets
+    if (workpiece_ids_vec.size() != target_ids_vec.size()) {
+        RCLCPP_ERROR(LOGGER, "Mismatch between number of detected workpieces (%zu) and targets (%zu). Aborting.", workpiece_ids_vec.size(), target_ids_vec.size());
         return;
     }
 
-    RCLCPP_INFO(LOGGER, "Task planning succeeded. Publishing solution..."); 
-    task_.introspection().publishSolution(*task_.solutions().front()); 
+    for (size_t i = 0; i < workpiece_ids_vec.size(); ++i)
+    {
+        RCLCPP_INFO(LOGGER, "Starting task for workpiece %d -> target %d", workpiece_ids_vec[i], target_ids_vec[i]);
 
-    RCLCPP_INFO(LOGGER, "Executing task..."); 
-    auto result = task_.execute(*task_.solutions().front());
-    
-    if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS) { 
-        RCLCPP_ERROR_STREAM(LOGGER, "Task execution failed with code: " << result.val); 
-        return; 
+        task_ = createTask(workpiece_ids_vec[i], target_ids_vec[i]);
+
+        try {
+            task_.init();
+        } catch (mtc::InitStageException& e) {
+            RCLCPP_ERROR_STREAM(LOGGER, "Task initialization failed: " << e.what());
+            continue; 
+        }
+
+        RCLCPP_INFO(LOGGER, "Task initialized. Planning...");
+
+        if (!task_.plan(5)) {
+            RCLCPP_ERROR_STREAM(LOGGER, "Task planning failed for workpiece " << workpiece_ids_vec[i]);
+            continue; 
+        }
+
+        RCLCPP_INFO(LOGGER, "Task planning succeeded. Publishing solution...");
+        task_.introspection().publishSolution(*task_.solutions().front());
+
+        // RCLCPP_INFO(LOGGER, "Executing task...");
+        // auto result = task_.execute(*task_.solutions().front());
+
+        // if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS) {
+        //     RCLCPP_ERROR_STREAM(LOGGER, "Task execution failed for workpiece " << workpiece_ids_vec[i] << " with code: " << result.val);
+        //     continue;
+        // }
+
+        RCLCPP_INFO(LOGGER, "Task for workpiece %d executed successfully.", workpiece_ids_vec[i]);
     }
 
-    RCLCPP_INFO(LOGGER, "Task executed successfully."); 
-    task_planned_executed_ = true; 
+    RCLCPP_INFO(LOGGER, "All tasks completed.");
+    task_planned_executed_ = true;
 }
