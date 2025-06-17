@@ -3,7 +3,7 @@
 -  [x] Completed
 -  [ ] Not Started/ in Progress
 ---
-- ❌ Establish connection with the real robot.
+  ❌ Establish connection with the real robot.
 - [ ] Finalise calculations for storage angle localisation(rotated).
 - [ ] Clean up and add comments to the code.
 - [ ] Detect if the workpiece is inside the storage (circle).
