@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="logos">
+    <file>images/logos/robotic-arm.png</file>
+    <file>images/logos/conveyor-belt.png</file>
+    <file>images/logos/camera.png</file>
+  </qresource>
+  <qresource prefix="icons"/>
+</RCC>

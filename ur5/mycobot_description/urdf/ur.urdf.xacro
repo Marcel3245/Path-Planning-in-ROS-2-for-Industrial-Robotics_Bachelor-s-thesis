@@ -4,6 +4,8 @@
     <xacro:arg name="name" default="ur"/>
     <!-- import main macro -->
     <xacro:include filename="$(find mycobot_description)/urdf/ur_macro.xacro"/>
+    <xacro:include filename="$(find mycobot_description)/urdf/workspace/workspace.urdf.xacro" />
+    <xacro:include filename="$(find mycobot_description)/urdf/workspace/conveyor_belt.urdf.xacro" />
 
     <xacro:arg name="ur_type" default="ur5"/>
 
@@ -50,11 +52,15 @@
     <!-- create link fixed to the "world" -->
     <link name="world" />
 
-    <xacro:include filename="$(find mycobot_description)/urdf/workspace/workspace.urdf.xacro" />
-
+    <!-- Robot fixed workspace -->
     <xacro:workspace parent="world">
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:workspace>
+
+    <!-- Conveyor belt -->
+    <xacro:conveyor_belt parent="world">
+      <origin xyz="0.8 0.5 0" rpy="0 0 ${pi/2}"/>
+    </xacro:conveyor_belt>
 
     <!-- arm -->
     <xacro:ur_robot
@@ -103,6 +109,12 @@
           <ros>
               <remapping>/controller_manager/robot_description:=/robot_description</remapping>
           </ros>
+        </plugin>
+      
+        <!-- Conveyor Belt Plugin -->
+        <plugin filename="gz-sim-track-controller-system" name="gz::sim::systems::TrackController">
+            <link>conveyor_surface_link</link>
+            <odometry_publish_frequency>1</odometry_publish_frequency>
         </plugin>
       </gazebo>
     </xacro:if>
