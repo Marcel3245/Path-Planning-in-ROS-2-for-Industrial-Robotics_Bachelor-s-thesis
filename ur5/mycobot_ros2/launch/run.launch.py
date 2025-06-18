@@ -207,6 +207,11 @@ def generate_launch_description():
         executable="move_group",
         output="screen",
         parameters=moveit_config,
+        arguments=[
+        "--ros-args",
+        "--log-level",
+        "move_group.moveit.moveit.ros.planning_scene_monitor:=ERROR",
+    ],
     )
 
    ## ============================================================= CONTROLLERS INITIALIZATION ============================================================= ##
@@ -258,6 +263,13 @@ def generate_launch_description():
         name='static_tf_pub_camera_model', 
         output='screen',
         arguments=['0.35', '0.5', '2.1', '-1.57', '1.57', '0.0', 'world', 'camera_model']
+    )
+    camera_model_link_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_pub_camera_model_link', 
+        output='screen',
+        arguments=['0.05', '0.0', '0.0', '0.0', '0.0', '0.0', 'camera_model', 'camera_link']
     )
 
     robot_state_publisher = Node(
@@ -382,20 +394,30 @@ def generate_launch_description():
         output='screen',
         parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}],
     )
+    robot_movement = Node(
+        package='mycobot_robot',
+        executable='robot_movement',
+        name='robot_movement',
+        output='screen',
+        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}],
+    )
     
     ld = LaunchDescription(declare_arguments())
+
+    ld.add_action(OpenCV)
+    ld.add_action(belt_movement)
+    ld.add_action(hmi)
+    ld.add_action(robot_movement)
 
     ld.add_action(gazebo_resource_path)
     ld.add_action(fixed_tf_broadcast)
     ld.add_action(robot_state_publisher)
     ld.add_action(camera_model_tf)
-    ld.add_action(OpenCV)
-    ld.add_action(hmi)
-    ld.add_action(belt_movement)
+    ld.add_action(camera_model_link_tf)
     ld.add_action(gazebo_launch)
     ld.add_action(spawn_ur5)
     ld.add_action(gazebo_ros_bridge)
-    ld.add_action(rviz2_node)
+    # ld.add_action(rviz2_node)
     ld.add_action(move_group_node)
     ld.add_action(ros2_control_node)
   

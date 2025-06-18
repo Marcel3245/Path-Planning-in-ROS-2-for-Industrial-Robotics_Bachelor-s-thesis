@@ -18,12 +18,12 @@
   direction: GZ_TO_ROS
   lazy: true
 
-# - ros_topic_name: "/camera/rgb/side_image"
-#   gz_topic_name: "/camera_side/image"  
-#   ros_type_name: "sensor_msgs/msg/Image"
-#   gz_type_name: "gz.msgs.Image"
-#   direction: GZ_TO_ROS
-#   lazy: true
+- ros_topic_name: "/camera/rgb/side_image"
+  gz_topic_name: "/camera_side/image"  
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+  lazy: true
 
 - ros_topic_name: "/conveyor/velocity"
   gz_topic_name: "/model/ur5/link/conveyor_surface_link/track_cmd_vel"

@@ -27,7 +27,9 @@ arm_controller:
     state_interfaces:
       - position
       - velocity
-    
+
+    allow_partial_joints_goal: false
+    interpolate_from_desired_state: true
     open_loop_control: false
     allow_nonzero_velocity_at_trajectory_end: true
     allow_integration_in_goal_trajectories: true

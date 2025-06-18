@@ -3,17 +3,14 @@ import sys
 import threading
 import subprocess 
 import time 
-import array
 from datetime import datetime
 
 import rclpy
 from rclpy.node import Node
 from ament_index_python.packages import get_package_share_directory
 
-from std_msgs.msg import String
+from std_msgs.msg import Float64MultiArray, Bool, String
 from sensor_msgs.msg import Image 
-from std_msgs.msg import Bool
-from std_msgs.msg import Float64MultiArray
 
 import cv2
 import numpy as np
@@ -31,7 +28,8 @@ class RosSignalBridge(QObject):
     terminal_signal = pyqtSignal(str)
     video_signal    = pyqtSignal(QPixmap)
     belt_signal     = pyqtSignal(bool)
-    camera_signal   = pyqtSignal(tuple)
+    camera_signal   = pyqtSignal(bool)
+    robot_signal    = pyqtSignal(bool)
 
 class HMI(Node):
     def __init__(self):
@@ -100,21 +98,40 @@ class HMI(Node):
                                              f" border-radius: {self.diameter // 2}px;")
         self.signal_bridge.camera_signal.connect(self.update_camera_slot)
         
+        # Robot setup
+        self.window.robot_text = QTextEdit(self.window.textEdit_robot)
+        self.window.robot_text.setReadOnly(True)
+        self.window.robot_text.setStyleSheet("font-family: Ubuntu Mono; font-size: 10pt;")
+        self.window.robot_text.append("Robot is ready.")
+        
+        self.window.robot_LED = QFrame(self.window.robot_led_indicator)
+        self.window.robot_LED.setFixedSize(self.diameter, self.diameter)
+        self.window.robot_LED.setFrameShape(QFrame.NoFrame)
+        self.window.robot_LED.setStyleSheet(f"background-color: {self.gray_color.name()};"
+                                            f" border-radius: {self.diameter // 2}px;")
+        self.signal_bridge.robot_signal.connect(self.update_robot_slot)
+        
         # Start the program button setup
         if hasattr(self.window, 'pushButton_run_program'):
             self.window.pushButton_run_program.clicked.connect(self.on_run_program_clicked)
 
         # --- ROS Subscribers ---
         self.subscriber_terminal = self.create_subscription(String, 'terminal/info', self.terminal_callback, 10)
-        self.subscriber_image = self.create_subscription(Image, 'camera/video', self.video_callback, 10)
+        self.subscriber_image = self.create_subscription(Image, 'camera/video', self.main_camera_callback, 10)
+        self.subscriber_side_iamge = self.create_subscription(Image, 'camera/rgb/side_image', self.side_camera_callback, 10)
         self.subscriber_belt = self.create_subscription(Bool, 'camera/belt/move', self.belt_callback, 10)
-        self.subscriber_camera = self.create_subscription(Float64MultiArray, 'camera/workpiece/position', self.camera_callback, 10)
+        self.subscriber_camera = self.create_subscription(Bool, 'camera/active', self.camera_callback, 10)
+        self.subscriber_robot = self.create_subscription(Bool, 'robot/active', self.robot_callback, 10)
         
         # --- ROS Publisher ---
         self.publisher_belt = self.create_publisher(Bool, 'camera/belt/move', 10)  
+        self.publisher_robot = self.create_publisher(Bool, 'robot/active', 10)
+        self.publisher_camera_active = self.create_publisher(Bool, 'camera/active', 10)
         
         self.workpiece = workpiece.Workpiece()
         self.bridge = CvBridge()
+        
+        self.is_robot_active = False
 
         self.get_logger().info('HMI Node has been started.')
 
@@ -136,7 +153,7 @@ class HMI(Node):
         self.pixmap_item.setPixmap(pixmap)
         self.window.graphicsView.fitInView(self.pixmap_item, Qt.KeepAspectRatio)
     
-    def video_callback(self, msg):
+    def _process_and_emit_image(self, msg):
         try: 
             # Perform the non-GUI work (image conversion) in the ROS thread
             cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
@@ -151,6 +168,14 @@ class HMI(Node):
             error_message = f"Error processing video frame: {str(e)}"
             self.get_logger().error(error_message)
             self.signal_bridge.terminal_signal.emit(error_message)
+            
+    def main_camera_callback(self, msg):
+        if not self.is_robot_active:
+            self._process_and_emit_image(msg)
+            
+    def side_camera_callback(self, msg):
+        if self.is_robot_active:
+            self._process_and_emit_image(msg)
 
     def update_belt_slot(self, move):
         if move:
@@ -168,24 +193,38 @@ class HMI(Node):
         # Instead of updating the GUI directly, emit a signal.
         self.signal_bridge.belt_signal.emit(msg.data)
 
-    def update_camera_slot(self, data_tuple):
-        self.get_logger().info(f"Camera data received: {data_tuple}")
-        if data_tuple and len(data_tuple) == 3:
+    def update_camera_slot(self, msg):
+        if msg:
             self.window.camera_LED.setStyleSheet(f"background-color: {self.green.name()};"
                                                  f" border-radius: {self.diameter // 2}px;")
             self.window.camera_text.clear()
-            self.window.camera_text.append("Camera posting coords.")
+            self.window.camera_text.append("Computing coords.")
         else:
             self.window.camera_LED.setStyleSheet(f"background-color: {self.red.name()};"
                                                  f" border-radius: {self.diameter // 2}px;")
             self.window.camera_text.clear()
             self.window.camera_text.append("Camera is off.")
             
-    def camera_callback(self, msg: Float64MultiArray):
-        array_data = array.array('d', msg.data)
-        tuple_data = tuple(array_data)
+    def camera_callback(self, msg):
         # Instead of updating the GUI directly, emit a signal.
-        self.signal_bridge.camera_signal.emit(tuple_data)
+        self.signal_bridge.camera_signal.emit(msg.data)
+
+    def update_robot_slot(self, msg):
+        if msg:
+            self.window.robot_LED.setStyleSheet(f"background-color: {self.green.name()};"
+                                                f" border-radius: {self.diameter // 2}px;")
+            self.window.robot_text.clear()
+            self.window.robot_text.append("Robot is moving!")
+        else:
+            self.window.robot_LED.setStyleSheet(f"background-color: {self.red.name()};"
+                                                f" border-radius: {self.diameter // 2}px;")
+            self.window.robot_text.clear()
+            self.window.robot_text.append("Robot is not moving.")
+            
+    def robot_callback(self, msg):
+        self.is_robot_active = msg.data
+        # Instead of updating the GUI directly, emit a signal.
+        self.signal_bridge.robot_signal.emit(msg.data)
 
     def on_run_program_clicked(self):
         self.window.pushButton_run_program.setEnabled(False) 
@@ -216,11 +255,10 @@ class HMI(Node):
         except Exception as e:
             self.terminal_callback(String(data=f"Error spawning workpiece: {str(e)}"))
         
-        time.sleep(1)
+        time.sleep(2)
         # Run the belt motor
-        belt_msg = Bool()
-        belt_msg.data = True
-        self.publisher_belt.publish(belt_msg)
+        self.publisher_robot.publish(Bool(data=False))
+        self.publisher_belt.publish(Bool(data=True))
         self.terminal_callback(String(data="Belt motor started."))            
 
     def run_gui(self):

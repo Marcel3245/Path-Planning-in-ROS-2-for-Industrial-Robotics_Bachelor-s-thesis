@@ -69,7 +69,62 @@
         </visual>
       </link>
     </model>
-  
+
+    <model name="side_camera">
+      <!-- 30 degree tilt -->
+      <pose>0 -1.5 2 0 0.52 1.57</pose> 
+      <link name="camera_side_link">
+        <gravity>false</gravity>
+        <pose>0.05 0 0 0 0 0</pose>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.05 0.2 0.05</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.05 0.2 0.05</size>
+            </box>
+          </geometry>
+        </visual>
+        <sensor name="camera" type="camera">
+          <camera>
+            <horizontal_fov>1.25</horizontal_fov>
+            <image>
+              <width>1280</width>
+              <height>720</height>
+              <format>R8G8B8</format>
+            </image>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.007</stddev>
+            </noise>
+            <clip>
+              <near>0.1</near>
+              <far>20</far>
+            </clip>
+            <optical_frame_id>camera_side_link</optical_frame_id>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>50</update_rate>
+          <visualize>true</visualize>
+          <topic>camera_side/image</topic>
+        </sensor>
+      </link>
+    </model>
+
     <include>
       <uri>model://camera</uri>
       <static>true</static>
