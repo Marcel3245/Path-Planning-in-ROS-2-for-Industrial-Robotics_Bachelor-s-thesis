@@ -27,7 +27,7 @@
   <depend>visualization_msgs</depend>
 
   <!-- Dependencies for Launch File -->
-  <exec_depend>mycobot_opencv</exec_depend> <!-- Added because your launch file runs it -->
+  <exec_depend>mycobot_opencv</exec_depend>
   <exec_depend>moveit_ros_move_group</exec_depend>
   <exec_depend>moveit_configs_utils</exec_depend>
   <exec_depend>controller_manager</exec_depend>
