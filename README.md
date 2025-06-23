@@ -115,7 +115,7 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
     cd ~/ros2_ws/src
 
     # Clone the project code into the src directory
-    git clone https://github.com/Marcel3245/Path-Planning-in-ROS-2-for-Industrial-Robotics_Bachelor-s-thesis.git .
+    git clone -b multiple_tools https://github.com/Marcel3245/Path-Planning-in-ROS-2-for-Industrial-Robotics_Bachelor-s-thesis.git .
     cd plugins/ && git clone https://github.com/moveit/moveit_task_constructor.git -b jazzy
     
     # Install the dependencies
@@ -135,7 +135,7 @@ To launch the complete system, use the following ROS 2 command from your workspa
     ```bash
     # Run the program
     cd ~/ros2_ws/
-    ros2 launch mycobot_mtc run.launch.py
+    ros2 launch mycobot_ros2 run.launch.py
     ```
 
 **Upon execution, three windows should open:**
@@ -144,11 +144,6 @@ To launch the complete system, use the following ROS 2 command from your workspa
     2. RViz: The 3D visualization interface for monitoring the robot and planning scene.
     3. OpenCV Camera View: A window displaying the processed camera feed.
 
-**Within the RViz window, you will find two interactive buttons:**
-
-    1. Spawn Workpieces: Click this button to add six green workpiece objects into the designated storage area within the simulation.
-    2. Run MTC: Press this button to initiate the MoveIt Task Constructor (MTC) process. MTC will search for possible collision-free trajectories to move a workpiece.
-    
 The system is configured to find a specific number of trajectories (as defined in the code).
 If the MTC search is successful, the UR5 manipulator will automatically execute the trajectory determined to be the "cheapest" based on predefined cost metrics (also configured in the code). You can observe the robot's movement and the simulated workpiece transfer from the start to the target storage within the Gazebo simulation window, reflecting the planned real-world behavior.
 
@@ -157,6 +152,11 @@ https://github.com/user-attachments/assets/7fd1c0f5-ece4-40ba-8535-5647a472f274
 https://github.com/user-attachments/assets/875f37a6-1aff-492c-b158-e11d81ab6dba
 
 https://github.com/user-attachments/assets/b2e660de-b8a7-461a-8d87-1d067a61f9bd
+
+## State-of-the-art vs my approach
+![image](https://github.com/user-attachments/assets/1dd328ae-9cfb-4a01-a360-42a46eaae94a)
+This image depicts a PLC S7 1500 acting as a central task hub organizer, connecting and coordinating various industrial devices, including a computer, camera, robotic arm, conveyor belt, emergency stop button, and safety sensors.
+![image](https://github.com/user-attachments/assets/befe62d5-3b8c-400c-b55b-7cca84839f8e) | ![Multiple+tools drawio](https://github.com/user-attachments/assets/a210d864-7b72-4709-86a7-2ffd17f083d5)
 
 ## Possible Problems
 
