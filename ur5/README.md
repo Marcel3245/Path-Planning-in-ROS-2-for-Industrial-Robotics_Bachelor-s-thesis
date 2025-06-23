@@ -4,9 +4,9 @@
 -  [ ] Not Started/ in Progress
 ---
 - [ ] Finalise calculations for storage angle localisation(rotated).
-- [ ] Clean up and add comments to the code.
+- [x] Clean up and add comments to the code.
 - [ ] Detect if the workpiece is inside the storage (circle).
-- [ ] Store all 6 parts in the target storage.
+- [x] Store all 6 parts in the target storage.
 
 # Project Core (`UR5`)
 
