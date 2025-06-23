@@ -28,7 +28,7 @@
         </joint>
 
         <!-- =================== START STORAGE =================== -->
-        <link name="start_storage">
+        <link name="target_storage">
             <visual>
                 <geometry>
                     <mesh filename="package://mycobot_description/meshes/storage/visual/storage.dae"/>
@@ -48,7 +48,7 @@
 
         <joint name="${parent}_to_start-storage_joint" type="fixed">
             <parent link="${parent}"/>
-            <child link="start_storage"/>
+            <child link="target_storage"/>
             <origin xyz="-0.07 -0.385 0.9" rpy="0 0 0"/>
         </joint>
     </xacro:macro>

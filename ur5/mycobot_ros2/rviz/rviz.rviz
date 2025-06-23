@@ -15,11 +15,34 @@ Panels:
       - /Publish Point1
     Name: Tool Properties
     Splitter Ratio: 0.5886790156364441
-  - Class: rviz_common/Views
-    Expanded:
-      - /Current View1
-    Name: Views
-    Splitter Ratio: 0.5
+  # - Class: rviz_common/Views
+  #   Expanded:
+  #     - /Current View1
+  #   Name: Views
+  #   Splitter Ratio: 0.5
+    # Name: Motion Planning Tasks
+    # Tasks View:
+    #   property_splitter:
+    #     - 85
+    #     - 85
+    #   solution_sorting:
+    #     column: 0
+    #     order: 1
+    #   solutions_splitter:
+    #     - 318
+    #     - 158
+    #   solutions_view_columns: ~
+    #   tasks_view_columns:
+    #     - 229
+    #     - 26
+    #     - 26
+    #     - 35
+  - Class: moveit_task_constructor/Motion Planning Tasks
+    Global Settings:
+      Task View Settings:
+        Old task handling: Keep
+        Show Computation Times: true
+        Task Expansion: All Expanded
     Name: Motion Planning Tasks
     Tasks View:
       property_splitter:
@@ -42,15 +65,11 @@ Visualization Manager:
   Displays:
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
-      Collision Enabled: true
+      Collision Enabled: false                  
       Description File: ""
-      Description Source: Topic
-      Description Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: ""
+      Description Parameter: robot_description  
+      Description Topic: /robot_description
+      Description Source: Parameter             
       Enabled: true
       Links:
         All Links Enabled: true
@@ -58,14 +77,19 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: ""
-      Mass Properties:
-        Inertia: false
-        Mass: false
-      Name: StorageModel
+      Name: RobotModel                          
       TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Class: moveit_task_constructor/Motion Planning Tasks
+      Enabled: true
+      Interrupt Display: false
+      Loop Animation: false
+      Markers:
+        All at once?: false
+        Value: true
+      Name: Motion Planning Tasks
       Robot:
         Fixed Robot Color: 150; 50; 150
         Links:
@@ -159,7 +183,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          start_storage:
+          target_storage:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -217,18 +241,18 @@ Visualization Manager:
         {}
       Trail Step Size: 1
       Value: true
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: true
-      Name: My MarkerArray Display
-      Namespaces:
-        storage_object: true
-      Topic:
-        Depth: 1
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /mtc_node/visualization_marker_array
-      Value: true
+    # - Class: rviz_default_plugins/MarkerArray
+    #   Enabled: true
+    #   Name: My MarkerArray Display
+    #   Namespaces:
+    #     storage_object: true
+    #   Topic:
+    #     Depth: 1
+    #     Durability Policy: Volatile
+    #     History Policy: Keep Last
+    #     Reliability Policy: Reliable
+    #     Value: /mtc_node/visualization_marker_array
+    #   Value: true
     - Alpha: 0.5
       Cell Size: 1
       Class: rviz_default_plugins/Grid
@@ -247,88 +271,88 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Acceleration_Scaling_Factor: 0.5
-      Class: moveit_rviz_plugin/MotionPlanning
-      Enabled: true
-      Move Group Namespace: ""
-      MoveIt_Allow_Approximate_IK: false
-      MoveIt_Allow_External_Program: false
-      MoveIt_Allow_Replanning: false
-      MoveIt_Allow_Sensor_Positioning: false
-      MoveIt_Planning_Attempts: 10
-      MoveIt_Planning_Time: 5
-      MoveIt_Use_Cartesian_Path: false
-      MoveIt_Use_Constraint_Aware_IK: false
-      MoveIt_Workspace:
-        Center:
-          X: 0
-          Y: 0
-          Z: 0
-        Size:
-          X: 2
-          Y: 2
-          Z: 2
-      Name: MotionPlanning
-      Planned Path:
-        Color Enabled: true
-        Interrupt Display: true
-        Links:
-          All Links Enabled: true
-          Expand Joint Details: false
-          Expand Link Details: false
-          Expand Tree: false
-          Link Tree Style: Links in URDF Order
-        Loop Animation: false
-        Robot Alpha: 0.5
-        Robot Color: 150; 50; 150
-        Show Robot Collision: false
-        Show Robot Visual: true
-        Show Trail: false
-        State Display Time: 0.05 s
-        Trail Step Size: 1
-        Trajectory Topic: /display_planned_path
-        Use Sim Time: false
-      Planning Metrics:
-        Payload: 1
-        Show Joint Torques: false
-        Show Manipulability: false
-        Show Manipulability Index: false
-        Show Weight Limit: false
-        TextHeight: 0.07999999821186066
-      Planning Request:
-        Colliding Link Color: 255; 0; 0
-        Goal State Alpha: 1
-        Goal State Color: 250; 128; 0
-        Interactive Marker Size: 0
-        Joint Violation Color: 255; 0; 255
-        Planning Group: ur_manipulator
-        Query Goal State: true
-        Query Start State: false
-        Show Workspace: false
-        Start State Alpha: 1
-        Start State Color: 0; 255; 0
-      Planning Scene Topic: monitored_planning_scene
-      Robot Description: robot_description
-      Scene Geometry:
-        Scene Alpha: 0.8999999761581421
-        Scene Color: 50; 230; 50
-        Scene Display Time: 0.009999999776482582
-        Show Scene Geometry: true
-        Voxel Coloring: Z-Axis
-        Voxel Rendering: Occupied Voxels
-      Scene Robot:
-        Attached Body Color: 150; 50; 150
-        Links:
-          All Links Enabled: true
-          Expand Joint Details: false
-          Expand Link Details: false
-          Expand Tree: false
-          Link Tree Style: Links in URDF Order
-        Robot Alpha: 1
-        Show Robot Collision: false
-        Show Robot Visual: true
-      Value: true
-      Velocity_Scaling_Factor: 0.5
+    # - Acceleration_Scaling_Factor: 0.5
+    #   Class: moveit_rviz_plugin/MotionPlanning
+    #   Enabled: true
+    #   Move Group Namespace: ""
+    #   MoveIt_Allow_Approximate_IK: false
+    #   MoveIt_Allow_External_Program: false
+    #   MoveIt_Allow_Replanning: false
+    #   MoveIt_Allow_Sensor_Positioning: false
+    #   MoveIt_Planning_Attempts: 10
+    #   MoveIt_Planning_Time: 5
+    #   MoveIt_Use_Cartesian_Path: false
+    #   MoveIt_Use_Constraint_Aware_IK: false
+    #   MoveIt_Workspace:
+    #     Center:
+    #       X: 0
+    #       Y: 0
+    #       Z: 0
+    #     Size:
+    #       X: 2
+    #       Y: 2
+    #       Z: 2
+    #   Name: MotionPlanning
+    #   Planned Path:
+    #     Color Enabled: true
+    #     Interrupt Display: true
+    #     Links:
+    #       All Links Enabled: true
+    #       Expand Joint Details: false
+    #       Expand Link Details: false
+    #       Expand Tree: false
+    #       Link Tree Style: Links in URDF Order
+    #     Loop Animation: false
+    #     Robot Alpha: 0.5
+    #     Robot Color: 150; 50; 150
+    #     Show Robot Collision: false
+    #     Show Robot Visual: true
+    #     Show Trail: false
+    #     State Display Time: 0.05 s
+    #     Trail Step Size: 1
+    #     Trajectory Topic: /display_planned_path
+    #     Use Sim Time: false
+    #   Planning Metrics:
+    #     Payload: 1
+    #     Show Joint Torques: false
+    #     Show Manipulability: false
+    #     Show Manipulability Index: false
+    #     Show Weight Limit: false
+    #     TextHeight: 0.07999999821186066
+    #   Planning Request:
+    #     Colliding Link Color: 255; 0; 0
+    #     Goal State Alpha: 1
+    #     Goal State Color: 250; 128; 0
+    #     Interactive Marker Size: 0
+    #     Joint Violation Color: 255; 0; 255
+    #     Planning Group: ur_manipulator
+    #     Query Goal State: true
+    #     Query Start State: false
+    #     Show Workspace: false
+    #     Start State Alpha: 1
+    #     Start State Color: 0; 255; 0
+    #   Planning Scene Topic: monitored_planning_scene
+    #   Robot Description: robot_description
+    #   Scene Geometry:
+    #     Scene Alpha: 0.8999999761581421
+    #     Scene Color: 50; 230; 50
+    #     Scene Display Time: 0.009999999776482582
+    #     Show Scene Geometry: true
+    #     Voxel Coloring: Z-Axis
+    #     Voxel Rendering: Occupied Voxels
+    #   Scene Robot:
+    #     Attached Body Color: 150; 50; 150
+    #     Links:
+    #       All Links Enabled: true
+    #       Expand Joint Details: false
+    #       Expand Link Details: false
+    #       Expand Tree: false
+    #       Link Tree Style: Links in URDF Order
+    #     Robot Alpha: 1
+    #     Show Robot Collision: false
+    #     Show Robot Visual: true
+    #   Value: true
+    #   Velocity_Scaling_Factor: 0.5
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

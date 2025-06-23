@@ -249,29 +249,6 @@ def generate_launch_description():
         output='screen',
     )
     
-    fixed_tf_broadcast = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        output='screen',
-        arguments=['0', '0', '0.92', '0', '0', '0', 'world', 'base_link'],
-        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}]
-    )
-
-    camera_model_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_tf_pub_camera_model', 
-        output='screen',
-        arguments=['0.35', '0.5', '2.1', '-1.57', '1.57', '0.0', 'world', 'camera_model']
-    )
-    camera_model_link_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_tf_pub_camera_model_link', 
-        output='screen',
-        arguments=['0.05', '0.0', '0.0', '0.0', '0.0', '0.0', 'camera_model', 'camera_link']
-    )
-
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -296,6 +273,37 @@ def generate_launch_description():
         output="both",
     )
 
+   ## ============================================================= TF INITIALIZATION ============================================================= ##
+    fixed_tf_broadcast = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        output='screen',
+        arguments=['0', '0', '0.92', '0', '0', '0', 'world', 'base_link'],
+        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}]
+    )
+
+    camera_model_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_pub_camera_model', 
+        output='screen',
+        arguments=['0.35', '0.5', '2.1', '-1.57', '1.57', '0.0', 'world', 'camera_model']
+    )
+    camera_model_link_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_pub_camera_model_link', 
+        output='screen',
+        arguments=['0.05', '0.0', '0.0', '0.0', '0.0', '0.0', 'camera_model', 'camera_link']
+    )
+
+    conveyor_surface_link_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_pub_conveyor_surface_link',
+        output='screen',
+        arguments=['0.80', '0.50', '0.741', '0.0', '0.0', '0.0', 'world', 'conveyor_surface_link']
+    )
 
    ## ================================================================ GAZEBO INITIALIZATION =============================================================== ##
     gazebo_resource_path = SetEnvironmentVariable(
@@ -395,11 +403,11 @@ def generate_launch_description():
         parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}],
     )
     robot_movement = Node(
-        package='mycobot_robot',
-        executable='robot_movement',
-        name='robot_movement',
+        package='mycobot_mtc',
+        executable='mtc_node',
+        name='mtc_node',
         output='screen',
-        parameters=[{"use_sim_time": LaunchConfiguration("use_sim")}],
+        parameters=moveit_config,
     )
     
     ld = LaunchDescription(declare_arguments())
@@ -407,20 +415,23 @@ def generate_launch_description():
     ld.add_action(OpenCV)
     ld.add_action(belt_movement)
     ld.add_action(hmi)
-    ld.add_action(robot_movement)
-
     ld.add_action(gazebo_resource_path)
     ld.add_action(fixed_tf_broadcast)
     ld.add_action(robot_state_publisher)
     ld.add_action(camera_model_tf)
     ld.add_action(camera_model_link_tf)
+    ld.add_action(conveyor_surface_link_tf)
     ld.add_action(gazebo_launch)
     ld.add_action(spawn_ur5)
     ld.add_action(gazebo_ros_bridge)
-    # ld.add_action(rviz2_node)
+    ld.add_action(rviz2_node)
     ld.add_action(move_group_node)
     ld.add_action(ros2_control_node)
   
+    ld.add_action(TimerAction(
+        period=8.0,
+        actions=[robot_movement],
+    ))
     # To run the joint state broadcaster after the gazebo simulation launch is completed  
     ld.add_action(TimerAction(
         period=6.0,

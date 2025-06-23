@@ -35,7 +35,7 @@ class ImageSubscriber(Node):
     
     self.workpiece_radius = 0.021 # in meters [m]
     self.workpiece_middle_height = 0.04 # in meters [m]
-    self.camera_table_distance = 1.31 # in meters [m]
+    self.camera_table_distance = 1.25 # in meters [m]
     self.start_point = (490, 215)
     self.end_point = (740, 505)
     self.workpiece_detected = False
