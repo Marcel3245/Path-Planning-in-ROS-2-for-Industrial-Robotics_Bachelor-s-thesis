@@ -156,15 +156,17 @@ https://github.com/user-attachments/assets/b2e660de-b8a7-461a-8d87-1d067a61f9bd
 ## State-of-the-art vs my approach
 ![image](https://github.com/user-attachments/assets/1dd328ae-9cfb-4a01-a360-42a46eaae94a)
 
-This image depicts a PLC S7 1500 acting as a central task hub organizer, connecting and coordinating various industrial devices, including a computer, camera, robotic arm, conveyor belt, emergency stop button, and safety sensors.
+This image depicts a PLC S7 1500 acting as a central task hub organizer, connecting and coordinating various industrial devices, including a computer, camera, robotic arm, conveyor belt, emergency stop button, and safety sensors. This is typical approach in state-of-the-art robotic cell development.
 
 | ![Image 1](https://github.com/user-attachments/assets/befe62d5-3b8c-400c-b55b-7cca84839f8e) | ![Image 2](https://github.com/user-attachments/assets/a210d864-7b72-4709-86a7-2ffd17f083d5) |
 |:--:|:--:|
-
-
+The state-of-the-art system architecture in industrial robotics, as exemplified by the MER-Lab, often employs a rigid, hierarchical structure. This traditional approach, while proving its reliability, robustness, long run possibility, presents inherent challenges in terms of future trends: IoT (Internet of Things),  CPS (Cyber Physical Systems), and its scalability and flexibility. While PLCs excel at logic control and sequential operations, they can be less adept at handling complex data manipulation, algorithms, or large datasets compared to industrial PCs or cloud-based solutions. | This approach is characterised by its ability to offer greater flexibility in terms of the utilisation of a ROS 2 framework as a centralised data exchange system. The solution implemented in this software is characterised by its decentralised nature, a feature which eliminates the requirement for a master programmable logic controller (PLC). The ROS 2 system has been developed to facilitate more flexible communication at the hardware abstract level. The implementation of more accessible communication models, such as publish/subscribe or client/service, enables each device to communicate with other devices in a more efficient manner.
 
 ![Communication_model_in_multi_tools drawio](https://github.com/user-attachments/assets/b22c386d-53c7-424e-9783-3557c90aa509)
 
+The image above presents such an abstract level of communication between nodes, using the publish/subscribe model. Communication between nodes in ROS2 primarily occurs through a publish/subscribe pattern via "topics." Think of a topic as a named data channel where specific kinds of information are sent and received. A node that has data to share, such as sensor data or robot joint positions, acts as a "publisher." The publisher sends its data to a specific topic, without knowing which node will use the data. Other nodes that need that specific information act as "subscribers." They "subscribe" to the topic, and they will be notified when new data is published. This decoupling enables different parts of the system to share information without needing to be directly connected with each other. Multiple publishers and multiple subscribers can exist on a single topic, which adds further to the flexibility of the system . With the publish-subscribe model, adding or removing components is simple. A new sensor or robot can publish or subscribe to the existing topic without altering the architecture. This often stands in contrast to traditional systems, where implementing a new device requires significant reprogramming of multiple layers of the hierarchy. 
+
+*
 
 ## Possible Problems
 
