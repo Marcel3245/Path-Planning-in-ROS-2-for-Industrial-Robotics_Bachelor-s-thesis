@@ -155,9 +155,16 @@ https://github.com/user-attachments/assets/b2e660de-b8a7-461a-8d87-1d067a61f9bd
 
 ## State-of-the-art vs my approach
 ![image](https://github.com/user-attachments/assets/1dd328ae-9cfb-4a01-a360-42a46eaae94a)
+
 This image depicts a PLC S7 1500 acting as a central task hub organizer, connecting and coordinating various industrial devices, including a computer, camera, robotic arm, conveyor belt, emergency stop button, and safety sensors.
+
 | ![Image 1](https://github.com/user-attachments/assets/befe62d5-3b8c-400c-b55b-7cca84839f8e) | ![Image 2](https://github.com/user-attachments/assets/a210d864-7b72-4709-86a7-2ffd17f083d5) |
 |:--:|:--:|
+
+
+
+![Communication_model_in_multi_tools drawio](https://github.com/user-attachments/assets/b22c386d-53c7-424e-9783-3557c90aa509)
+
 
 ## Possible Problems
 
