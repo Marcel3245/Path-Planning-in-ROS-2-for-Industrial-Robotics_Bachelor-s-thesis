@@ -3,11 +3,20 @@
 -  [x] Completed
 -  [ ] Not Started/ in Progress
 ---
-- [ ] Establish connection with the real robot.
-- [ ] Finalise calculations for storage angle localisation.
-- [ ] Clean up and add comments to the code.
-- [ ] Detect if the workpiece is inside the storage (circle).
-- [ ] Store all 6 parts in the target storage.
+- [ ] **Add extra topics for HMI tool terminals**  
+  Improve the information updates by adding more topics to the following UI elements:
+  - `textEdit_camera`
+  - `textEdit_conveyor_belt`
+  - `textEdit_robot`
+
+- [ ] **Make the restart button functional**  
+  Implement functionality for `pushButton_restart_program` to properly restart the program.
+  - Remove the workpiece from the gazebo simulation.
+  - Clean the MTC solutions.
+  - Decide on the starting position of the robot.
+
+- [ ] **Fix terminal clipping issue**  
+  Resolve the UI clipping problem affecting the `terminal` display.
 
 # Project Core (`UR5`)
 
@@ -17,7 +26,15 @@ As outlined in the official ROS 2 documentation, packages are fundamental organi
 
 Within the `UR5` directory, you will find the following seven packages, each prefixed with `mycobot_` for naming consistency:
 
-1.  **`mycobot_description`**
+1.  **`mycobot_conveyor_belt`**
+    This package provides the working infrastructure for a simulated conveyor belt system, such as signal translation or information exchange, based on the belt status.
+
+    ```
+    mycobot_conveyor_belt/
+    └── mycobot_conveyor_belt/
+    ```
+
+3.  **`mycobot_description`**
     This package contains the detailed description of the UR5 robot. It includes:
     *   `config`: Robot-specific configuration files (kinematics, joint limits, etc.).
     *   `meshes`: Visual and collision geometry files for the robot links.
@@ -30,7 +47,7 @@ Within the `UR5` directory, you will find the following seven packages, each pre
       └── urdf/
     ```
 
-2.  **`mycobot_gazebo`**
+4.  **`mycobot_gazebo`**
     This package defines the Gazebo simulation environment for the project:
     *   `config`: Configuration related to the ROS-Gazebo bridge communication.
     *   `models`: Description files (visual, collision, parameters) for objects used *only* within the Gazebo simulation (e.g., workpieces, tables).
@@ -43,7 +60,7 @@ Within the `UR5` directory, you will find the following seven packages, each pre
       └── worlds/
     ```
 
-3.  **`mycobot_gripper_description`**
+5.  **`mycobot_gripper_description`**
     Contains the specific description for the Robotiq gripper used with the UR5:
     *   `meshes`: Visual and collision geometry files for the gripper links.
     *   `urdf`: The URDF file describing the gripper.
@@ -54,7 +71,20 @@ Within the `UR5` directory, you will find the following seven packages, each pre
       └── urdf/
     ```
 
-4.  **`mycobot_moveit`**
+6.  **`mycobot_interface`**
+    This module provides the interface for integrating the MyCobot robot with the human-machine interface (HMI) system.
+    * `mycobot_interface`: Python package containing ROS node(s) and logic.
+    * `resource`:  Static assets (icons, UI resources, etc.).
+    * `human_machine_interface.ui`: Qt Designer file for the HMI layout.
+
+    ```
+    mycobot_interface/
+      ├── mycobot_interface/
+      ├── resource/
+      └── human_machine_interface.ui
+    ```
+
+8.  **`mycobot_moveit`**
     This is the MoveIt configuration package for the UR5. MoveIt is a powerful framework providing tools for motion planning, manipulation, perception, kinematics, control, and navigation:
     *   `config`: Important configuration data for MoveIt's path planning and the robot setup.
     *   `srdf`: The Semantic Robot Description Format file, which complements the URDF by adding information about robot poses, collision pairs to ignore, and groups of joints.
@@ -67,30 +97,36 @@ Within the `UR5` directory, you will find the following seven packages, each pre
       └── .setup_assistant/
     ```
 
-5.  **`mycobot_mtc`**
+9.  **`mycobot_mtc`**
     Houses the implementation of the MoveIt Task Constructor (MTC) logic. MTC is used to define and plan complex robot tasks broken down into interdependent subtasks:
-    *   `launch`: Stores ROS 2 launch files for starting different components or the entire system configuration.
-    *   `rviz`: Configuration files for the RViz visualization interface, including panel layouts and displays.
-    *   `src`: Source code files implementing the MTC task sequence and logic.
+    *    `include`: Header for source code.
+    *    `src`: Source code files implementing the MTC task sequence and logic.
 
     ```
     mycobot_mtc/
-      ├── launch/
-      ├── rviz/
+      ├── include/
       └── src/
     ```
 
-6.  **`mycobot_opencv`**
+10.  **`mycobot_opencv`**
     Contains the ROS 2 node(s) and configuration related to object detection using the OpenCV library:
     *   `mycobot_opencv`: Directory likely containing the source code and specific launch/configuration files for the OpenCV node responsible for camera processing and object detection.
 
-    ```    mycobot_opencv/
+    ```
+    mycobot_opencv/
       └── mycobot_opencv/ 
     ```
-    *(Note: The internal structure of the `mycobot_opencv` subdirectory may vary.)*
 
-7.  **`mycobot_ros2`**
-    This package serves as a fundamental organizational unit for general ROS 2 code within the project. It might contain common utilities, base nodes, or components not specific to description, simulation, or planning. (The specific contents would depend on the project's design).
+11.  **`mycobot_ros2`**
+    This package serves as a fundamental organizational unit for general ROS 2 code within the project. It might contain common utilities, base nodes, or components not specific to description, simulation, or planning. (The specific contents would depend on the             project's design).
+    *   `launch`: Stores ROS 2 launch files for starting different components or the entire system configuration.
+    *   `rviz`: Configuration files for the RViz visualization interface, including panel layouts and displays.
+
+    ```
+    mycobot_ros2/
+      ├── launch/
+      └── rviz/
+    ```
 
 Each of these packages typically adheres to a standard ROS 2 directory structure, including these key elements:
 
