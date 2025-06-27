@@ -132,11 +132,11 @@ To set up and prepare the ROS 2 workspace for this project, follow these steps:
 
 To launch the complete system, use the following ROS 2 command from your workspace root:
 
-    ```bash
-    # Run the program
-    cd ~/ros2_ws/
-    ros2 launch mycobot_ros2 run.launch.py
-    ```
+```bash
+# Run the program
+cd ~/ros2_ws/
+ros2 launch mycobot_ros2 run.launch.py
+```
 
 **Upon execution, three windows should open:**
 
@@ -162,7 +162,11 @@ The state-of-the-art system architecture in industrial robotics, as exemplified 
 
 The image above presents such an abstract level of communication between nodes, using the publish/subscribe model. Communication between nodes in ROS2 primarily occurs through a publish/subscribe pattern via "topics." Think of a topic as a named data channel where specific kinds of information are sent and received. A node that has data to share, such as sensor data or robot joint positions, acts as a "publisher." The publisher sends its data to a specific topic, without knowing which node will use the data. Other nodes that need that specific information act as "subscribers." They "subscribe" to the topic, and they will be notified when new data is published. This decoupling enables different parts of the system to share information without needing to be directly connected with each other. Multiple publishers and multiple subscribers can exist on a single topic, which adds further to the flexibility of the system . With the publish-subscribe model, adding or removing components is simple. A new sensor or robot can publish or subscribe to the existing topic without altering the architecture. This often stands in contrast to traditional systems, where implementing a new device requires significant reprogramming of multiple layers of the hierarchy. 
 
-*
+* `terminal/info`
+* `camera/video`: It is a computed image from the camera, with markings, etc. (the main publisher is the mycobot_opencv node).
+* `camera/belt/move`: Based on the computed image, control the belt movement.
+* `camera/rgb/side_image`: It is an image directly from the camera.
+* `{name}/active`
 
 ## Possible Problems
 
