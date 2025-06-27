@@ -184,6 +184,7 @@ def generate_launch_description():
         "capabilities": " ".join([
             "pilz_industrial_motion_planner/MoveGroupSequenceAction",
             "pilz_industrial_motion_planner/MoveGroupSequenceService",
+            "move_group/ExecuteTaskSolutionCapability",
         ])
     }
     

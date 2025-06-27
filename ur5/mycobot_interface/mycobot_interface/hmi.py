@@ -118,6 +118,7 @@ class HMI(Node):
         # Restart the program button setup
         if hasattr(self.window, 'pushButton_restart_program'):
             self.window.pushButton_restart_program.clicked.connect(self.on_restart_program_clicked)
+            self.window.pushButton_restart_program.setEnabled(False)
             
         # --- ROS Subscribers ---
         self.subscriber_terminal = self.create_subscription(String, 'terminal/info', self.terminal_callback, 10)
@@ -232,6 +233,7 @@ class HMI(Node):
 
     def on_run_program_clicked(self):
         self.window.pushButton_run_program.setEnabled(False) 
+        self.window.pushButton_restart_program.setEnabled(True)
         self.terminal_callback(String(data="Running program..."))        
         self.workpiece.set_random_pose()
 
@@ -267,23 +269,14 @@ class HMI(Node):
         
     def on_restart_program_clicked(self):
         self.window.pushButton_run_program.setEnabled(True)
-
+        self.window.pushButton_restart_program.setEnabled(False)
+        
         self.publisher_belt.publish(Bool(data=False))
         self.publisher_robot.publish(Bool(data=False))
         self.publisher_camera_active.publish(Bool(data=False))
+        
+        # Remove the workpiece
 
-        self.window.conveyor_belt_text.clear()
-        self.window.conveyor_belt_text.append("Belt is ready.")
-        self.window.conveyor_belt_LED.setStyleSheet(f"background-color: {self.gray_color.name()};" f" border-radius: {self.diameter // 2}px;")
-
-        self.window.camera_text.clear()
-        self.window.camera_text.append("Camera is ready.")
-        self.window.camera_LED.setStyleSheet(f"background-color: {self.gray_color.name()};" f" border-radius: {self.diameter // 2}px;")
-
-        self.window.robot_text.clear()
-        self.window.robot_text.append("Robot is ready.")
-        self.window.robot_LED.setStyleSheet(f"background-color: {self.gray_color.name()};" f" border-radius: {self.diameter // 2}px;")
-                
         self.terminal_callback(String(data="Program restarted.")) 
 
     def run_gui(self):

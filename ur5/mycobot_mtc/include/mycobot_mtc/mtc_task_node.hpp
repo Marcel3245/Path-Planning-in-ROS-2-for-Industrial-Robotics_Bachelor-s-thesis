@@ -47,8 +47,10 @@ private:
     rclcpp::Node::SharedPtr node_;
     mtc::Task task_;
 
-    // --- Subscriptions and Publishers ---
+    // --- Subscribers ---
     rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr subscriber_workpiece_position;
+    
+    // --- Publishers ---
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_terminal_info;
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr publisher_robot_active;
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr publisher_camera_active;
