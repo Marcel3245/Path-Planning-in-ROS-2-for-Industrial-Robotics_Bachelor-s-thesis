@@ -18,6 +18,9 @@
 - [ ] **Fix terminal clipping issue**  
   Resolve the UI clipping problem affecting the `terminal` display.
 
+- [ ] **Improve the topic names**
+  Make topic names more consistent and tool-agnostic to improve clarity and accessibility across different interfaces and user backgrounds.
+
 # Project Core (`UR5`)
 
 This directory (`UR5`) serves as the core repository for the project's code, encompassing the UR5 robot description and the main system logic. The codebase is organized into standard ROS 2 packages.
