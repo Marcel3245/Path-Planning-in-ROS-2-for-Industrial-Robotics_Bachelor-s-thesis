@@ -1,3 +1,6 @@
+<p align="center">
+    <img width="888" height="323" alt="image" src="https://github.com/user-attachments/assets/91cd0001-ccde-4112-a3d1-f885bf6de093" />
+</p>   
 
 # Bachelor's thesis: Path Planning in ROS 2 for Industrial Robotics
 
