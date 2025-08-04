@@ -1,3 +1,11 @@
+<p align="center">
+    <table>
+      <tr>
+        <td><img src="https://github.com/user-attachments/assets/52e38445-66ce-44e1-9f12-b890ca1a31ee" width="400"></td>
+        <td><img src="https://github.com/user-attachments/assets/804f9f3c-8f49-47ef-a557-0850e515f8aa" width="470"></td>
+      </tr>
+    </table>
+</p>
 
 # Bachelor's thesis: Path Planning in ROS 2 for Industrial Robotics
 
